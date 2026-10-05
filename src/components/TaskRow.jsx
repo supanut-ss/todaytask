@@ -5,6 +5,7 @@ import {
   CalendarDays,
   Check,
   Ellipsis,
+  GripVertical,
   Pencil,
   Play,
   Trash2,
@@ -34,6 +35,7 @@ export default function TaskRow({
   onMove,
   onRemove,
   onDropAt,
+  reorderMode = false,
 }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(task.title)
@@ -42,8 +44,9 @@ export default function TaskRow({
   const done = task.status === 'done'
   const tomorrow = addDays(todayISO, 1)
   const gestures = useRowGestures({
-    enabled: !editing && !expanded,
-    onSwipeDelete: onRemove,
+    enabled: reorderMode || (!editing && !expanded),
+    handleOnly: reorderMode,
+    onSwipeDelete: reorderMode ? undefined : onRemove,
     onDropAt: done ? undefined : onDropAt,
   })
   const { mode, offset } = gestures
@@ -89,22 +92,24 @@ export default function TaskRow({
         style={mode === 'swipe' ? { transform: `translateX(${offset.x}px)` } : undefined}
         {...gestures.bind}
       >
-        <button
-          type="button"
-          className={styles.check}
-          aria-pressed={done}
-          aria-label={done ? `ยกเลิกเสร็จ: ${task.title}` : `ติ๊กเสร็จ: ${task.title}`}
-          onClick={() => {
-            if (!done) setCelebrate(true)
-            onToggle()
-          }}
-        >
-          <span
-            className={`${styles.box} ${done ? styles.boxDone : ''} ${done && celebrate ? styles.pop : ''}`}
+        {!reorderMode && (
+          <button
+            type="button"
+            className={styles.check}
+            aria-pressed={done}
+            aria-label={done ? `ยกเลิกเสร็จ: ${task.title}` : `ติ๊กเสร็จ: ${task.title}`}
+            onClick={() => {
+              if (!done) setCelebrate(true)
+              onToggle()
+            }}
           >
-            {done && <Check size={14} strokeWidth={3.5} aria-hidden="true" />}
-          </span>
-        </button>
+            <span
+              className={`${styles.box} ${done ? styles.boxDone : ''} ${done && celebrate ? styles.pop : ''}`}
+            >
+              {done && <Check size={14} strokeWidth={3.5} aria-hidden="true" />}
+            </span>
+          </button>
+        )}
 
         {editing ? (
           <form className={styles.edit} onSubmit={saveEdit}>
@@ -136,7 +141,7 @@ export default function TaskRow({
           </div>
         )}
 
-        {isCurrent && !done && !editing && onFinish && (
+        {isCurrent && !done && !editing && !reorderMode && onFinish && (
           <Button
             className={styles.finish}
             icon={Check}
@@ -149,21 +154,44 @@ export default function TaskRow({
           />
         )}
 
-        <button
-          type="button"
-          className={styles.more}
-          aria-expanded={expanded}
-          aria-label={`ตัวเลือกของ ${task.title}`}
-          onClick={() => {
-            setPicking(false)
-            onExpandedChange(!expanded)
-          }}
-        >
-          <Ellipsis size={22} aria-hidden="true" />
-        </button>
+        {reorderMode && !done && (
+          <button
+            type="button"
+            className={styles.grip}
+            data-drag-handle
+            aria-label={`ลากเพื่อจัดลำดับ: ${task.title}`}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowUp' && canMoveUp) {
+                e.preventDefault()
+                onReorder(-1)
+              }
+              if (e.key === 'ArrowDown' && canMoveDown) {
+                e.preventDefault()
+                onReorder(1)
+              }
+            }}
+          >
+            <GripVertical size={22} aria-hidden="true" />
+          </button>
+        )}
+
+        {!reorderMode && (
+          <button
+            type="button"
+            className={styles.more}
+            aria-expanded={expanded}
+            aria-label={`ตัวเลือกของ ${task.title}`}
+            onClick={() => {
+              setPicking(false)
+              onExpandedChange(!expanded)
+            }}
+          >
+            <Ellipsis size={22} aria-hidden="true" />
+          </button>
+        )}
       </div>
 
-      {expanded && (
+      {expanded && !reorderMode && (
         <div className={styles.panel}>
           <div className={styles.actions}>
             <Button variant="secondary" icon={Pencil} onClick={startEdit}>

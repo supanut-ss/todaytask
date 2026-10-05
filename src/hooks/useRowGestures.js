@@ -10,9 +10,10 @@ const INTERACTIVE = 'button, input, textarea, select, a, form'
 /** ท่าทางบนแถวงาน
  *  - นิ้ว/ปากกา: ปัดซ้ายเพื่อลบ (onSwipeDelete) แนวตั้งยังเลื่อนหน้าได้ตามปกติ
  *  - เมาส์: ลากแถวขึ้น/ลงเพื่อจัดลำดับ (onDropAt รับตำแหน่งใหม่ในกลุ่มแถวที่ data-todo="true")
+ *  - โหมดจัดลำดับ (handleOnly): ลากได้เฉพาะด้ามจับ [data-drag-handle] ด้วยนิ้วหรือเมาส์ (ด้ามจับตั้ง touch-action: none)
  *  ทุกท่ามีทางเลือกที่เป็นปุ่มอยู่แล้ว (ปุ่ม ⋯ > ลบ / เลื่อนขึ้น / เลื่อนลง)
  *  คืน { bind, mode, offset }: bind กระจายลงบนแถว, mode = idle | swipe | drag, offset = { x, y } ที่ต้องเลื่อน */
-export function useRowGestures({ enabled = true, onSwipeDelete, onDropAt }) {
+export function useRowGestures({ enabled = true, onSwipeDelete, onDropAt, handleOnly = false }) {
   const [mode, setMode] = useState('idle')
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const start = useRef(null)
@@ -37,7 +38,9 @@ export function useRowGestures({ enabled = true, onSwipeDelete, onDropAt }) {
   }
 
   const onPointerDown = (event) => {
-    if (!enabled || event.button !== 0 || event.target.closest(INTERACTIVE)) return
+    if (!enabled || event.button !== 0) return
+    const handle = event.target.closest('[data-drag-handle]')
+    if (handleOnly ? !handle : event.target.closest(INTERACTIVE)) return
     const item = event.currentTarget.closest('li')
     const siblings = item ? [...item.parentElement.querySelectorAll('li[data-todo="true"]')] : []
     start.current = {
@@ -48,6 +51,7 @@ export function useRowGestures({ enabled = true, onSwipeDelete, onDropAt }) {
       rects: siblings.map((li) => li.getBoundingClientRect()),
       index: siblings.indexOf(item),
       mode: 'idle',
+      handle: Boolean(handle),
     }
   }
 
@@ -58,7 +62,9 @@ export function useRowGestures({ enabled = true, onSwipeDelete, onDropAt }) {
     const dy = event.clientY - s.y
 
     if (s.mode === 'idle') {
-      if (s.type === 'mouse') {
+      if (s.handle) {
+        if (onDropAt && s.index >= 0 && Math.abs(dy) > DRAG_START) s.mode = 'drag'
+      } else if (s.type === 'mouse') {
         if (onDropAt && s.index >= 0 && Math.abs(dy) > DRAG_START && Math.abs(dy) > Math.abs(dx)) {
           s.mode = 'drag'
         }

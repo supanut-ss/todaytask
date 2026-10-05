@@ -3,7 +3,13 @@ import TaskRow from './TaskRow.jsx'
 import styles from './TaskList.module.css'
 
 /** รายการงานของวันหนึ่ง (tasks เรียงพร้อมแสดงผลแล้ว) เปิดแผงตัวเลือกได้ทีละแถว */
-export default function TaskList({ tasks, todayISO, currentId = null, actions }) {
+export default function TaskList({
+  tasks,
+  todayISO,
+  currentId = null,
+  actions,
+  reorderMode = false,
+}) {
   const [openId, setOpenId] = useState(null)
   const todo = tasks.filter((t) => t.status !== 'done')
 
@@ -24,6 +30,7 @@ export default function TaskList({ tasks, todayISO, currentId = null, actions })
             onSetCurrent={actions.setCurrent ? () => actions.setCurrent(task) : undefined}
             onFinish={() => actions.finish(task)}
             onDropAt={actions.reorderTo ? (index) => actions.reorderTo(task, index) : undefined}
+            reorderMode={reorderMode}
             onToggle={() => actions.toggle(task)}
             onRename={(title) => actions.rename(task, title)}
             onReorder={(direction) => actions.reorder(task, direction)}

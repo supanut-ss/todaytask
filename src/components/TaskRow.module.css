@@ -198,3 +198,23 @@
 .pop {
   animation: pop 180ms ease-out;
 }
+
+/* ด้ามจับในโหมดจัดลำดับ: ลากด้วยนิ้วได้เพราะปิดการเลื่อนหน้าเฉพาะจุดนี้ */
+.grip {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--muted);
+  cursor: grab;
+  touch-action: none;
+}
+
+.grip:active {
+  cursor: grabbing;
+}

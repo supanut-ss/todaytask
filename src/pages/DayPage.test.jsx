@@ -483,6 +483,50 @@ describe('ฟีเจอร์ใหม่: สถิติ ฉลอง วา
   })
 })
 
+describe('โหมดจัดลำดับ (ด้ามจับสำหรับนิ้ว)', () => {
+  beforeEach(() => window.localStorage.clear())
+  afterEach(cleanup)
+
+  const toggle = (c) =>
+    c.querySelector('button[aria-label="จัดลำดับงาน"], button[aria-label="เสร็จสิ้นการจัดลำดับ"]')
+  const grips = (c) => c.querySelectorAll('button[data-drag-handle]')
+
+  it('ปุ่มจัดลำดับโผล่เมื่อมีงานที่ยังไม่เสร็จอย่างน้อย 2 งาน', async () => {
+    seedTasks([t('ก')])
+    const one = await mount('/')
+    expect(toggle(one)).toBeNull()
+    await cleanup()
+    seedTasks([t('ก', { order: 0 }), t('ข', { order: 1 })])
+    const two = await mount('/')
+    expect(toggle(two)).not.toBeNull()
+  })
+
+  it('เข้าโหมด: โชว์ด้ามจับทุกแถว ซ่อนปุ่มติ๊ก/ตัวเลือก ออกจากโหมดแล้วกลับเป็นปกติ', async () => {
+    seedTasks([t('ก', { order: 0 }), t('ข', { order: 1 })])
+    const c = await mount('/')
+    expect(grips(c)).toHaveLength(0)
+    await click(toggle(c))
+    expect(grips(c)).toHaveLength(2)
+    expect(c.querySelector('button[aria-label^="ติ๊กเสร็จ"]')).toBeNull()
+    expect(more(c, 'ก')).toBeNull()
+    await click(toggle(c))
+    expect(grips(c)).toHaveLength(0)
+    expect(more(c, 'ก')).not.toBeNull()
+  })
+
+  it('ด้ามจับ: กดลูกศรลง/ขึ้นบนคีย์บอร์ดเพื่อเลื่อนลำดับ', async () => {
+    seedTasks([t('ก', { order: 0 }), t('ข', { order: 1 }), t('ค', { order: 2 })])
+    const c = await mount('/')
+    await click(toggle(c))
+    const key = (el, k) =>
+      act(async () => el.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true })))
+    await key(grips(c)[0], 'ArrowDown')
+    expect(taskTitles(c)).toEqual(['ข', 'ก', 'ค'])
+    await key(grips(c)[2], 'ArrowUp')
+    expect(taskTitles(c)).toEqual(['ข', 'ค', 'ก'])
+  })
+})
+
 describe('ข้อมูลใน localStorage รูปร่างผิด (เฟส 7)', () => {
   beforeEach(() => window.localStorage.clear())
   afterEach(cleanup)

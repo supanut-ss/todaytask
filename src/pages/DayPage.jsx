@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { CalendarDays, ChevronRight, Flame } from 'lucide-react'
+import { ArrowUpDown, CalendarDays, Check, ChevronRight, Flame } from 'lucide-react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import AddTask from '../components/AddTask.jsx'
 import Button from '../components/Button.jsx'
@@ -44,6 +44,7 @@ export default function DayPage() {
   const { show } = useSnackbar()
   const { notes, schedule: scheduleNote, discard: discardNote } = useParkingActions(todayISO)
   const { preferred, choose } = useCurrentTask()
+  const [reordering, setReordering] = useState(false) // โหมดจัดลำดับ: โชว์ด้ามจับให้ลากด้วยนิ้ว
   const [addingFor, setAddingFor] = useState(null) // วันที่ที่กำลังเปิดช่องเพิ่มงาน
 
   const dayTasks = useMemo(() => (valid ? tasksOnDate(tasks, iso) : []), [tasks, iso, valid])
@@ -75,6 +76,8 @@ export default function DayPage() {
   const done = dayTasks.filter((t) => t.status === 'done').length
   const canAdd = iso >= todayISO // วางแผนของวันที่ผ่านไปแล้วไม่ได้ แต่ติ๊ก/ย้าย/ลบงานเก่าได้
   const adding = addingFor === iso
+  const reorderMode = reordering && dayTasks.filter((t) => t.status !== 'done').length >= 2
+  const canReorder = dayTasks.filter((t) => t.status !== 'done').length >= 2
 
   const withUndo = (message, snapshot) =>
     show(message, { actionLabel: 'เลิกทำ', onAction: () => restore(snapshot), duration: 5000 })
@@ -159,7 +162,18 @@ export default function DayPage() {
           {isToday && <OverdueGroup tasks={overdue} todayISO={todayISO} actions={actions} />}
 
           <section className={styles.section} aria-label={`งานของ${label}`}>
-            <h2>งานของ{label}</h2>
+            <div className={styles.sectionHead}>
+              <h2>งานของ{label}</h2>
+              {canReorder && (
+                <Button
+                  variant="text"
+                  icon={reorderMode ? Check : ArrowUpDown}
+                  iconOnly
+                  aria-label={reorderMode ? 'เสร็จสิ้นการจัดลำดับ' : 'จัดลำดับงาน'}
+                  onClick={() => setReordering((v) => !v)}
+                />
+              )}
+            </div>
             <Card flush>
               {total > 0 ? (
                 <TaskList
@@ -167,6 +181,7 @@ export default function DayPage() {
                   todayISO={todayISO}
                   currentId={current?.id ?? null}
                   actions={actions}
+                  reorderMode={reorderMode}
                 />
               ) : (
                 <EmptyState

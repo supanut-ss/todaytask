@@ -55,8 +55,15 @@
   transition: width 200ms ease-out;
 }
 
-.section h2 {
-  margin-bottom: var(--space-2);
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
+}
+
+.sectionHead button {
+  margin-right: calc(var(--space-2) * -1);
 }
 
 .addRow {
