@@ -3,6 +3,7 @@
    - sw.js / index.html / manifest.webmanifest ห้ามแคช, ไฟล์ใน assets/ แคชยาว
    - .webmanifest ตอบเป็น application/manifest+json
    เปลี่ยนโฟลเดอร์ที่เสิร์ฟระหว่างทางได้ (setDir) เพื่อจำลองการ deploy เวอร์ชันใหม่ */
+import { pathToFileURL } from 'node:url'
 import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join, normalize, resolve, sep } from 'node:path'
@@ -123,7 +124,7 @@ export async function startServer({
 }
 
 // รันตรงๆ: node e2e/server.mjs [dist] [port]
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const { url } = await startServer({
     dir: process.argv[2] ?? 'dist',
     port: Number(process.argv[3] ?? 4173),

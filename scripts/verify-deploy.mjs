@@ -4,6 +4,8 @@
          node scripts/verify-deploy.mjs http://127.0.0.1:4173 --allow-http   (ทดสอบในเครื่อง)
    ออกด้วยรหัส 1 ถ้ามีข้อที่ "ไม่ผ่าน" (ข้อ "เตือน" ไม่ทำให้ล้ม) */
 
+import { pathToFileURL } from 'node:url'
+
 const OK = 'ผ่าน'
 const FAIL = 'ไม่ผ่าน'
 const WARN = 'เตือน'
@@ -222,7 +224,7 @@ export function summarize(results) {
 }
 
 // รันจากบรรทัดคำสั่ง
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = process.argv.slice(2)
   const url = args.find((a) => !a.startsWith('--'))
   if (!url) {
