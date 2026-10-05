@@ -123,6 +123,7 @@
 
 /* งานที่ทำอยู่ตอนนี้: เป็นแถวในรายการ ไฮไลต์เบาๆ ด้วยพื้นม่วงอ่อน + แถบสีแบรนด์ด้านซ้าย */
 .current {
+  padding: var(--space-1) 0;
   border-radius: var(--radius-sm);
   background: var(--blue);
 }
@@ -135,6 +136,7 @@
 .badge {
   align-self: flex-start;
   margin-top: var(--space-1);
+  margin-bottom: -2px;
   color: var(--ink-soft);
   font-size: var(--text-small);
   font-weight: 600;
