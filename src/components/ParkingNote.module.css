@@ -12,7 +12,7 @@
 }
 
 .time {
-  font-size: 13px;
+  font-size: var(--text-small);
   color: var(--muted);
 }
 
