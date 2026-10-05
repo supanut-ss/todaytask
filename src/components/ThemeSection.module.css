@@ -1,31 +1,56 @@
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 64px;
+  padding: var(--space-2) var(--space-4);
+}
+
+.row + .row {
+  border-top: 1px solid var(--border);
+}
+
+.title {
+  font-size: var(--text-body);
+  font-weight: 500;
+}
+
 .group {
   display: flex;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  border-radius: var(--radius);
-  background: var(--border);
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--bg);
 }
 
 .option {
-  flex: 1;
-  min-height: var(--tap);
+  min-height: 36px;
+  padding: 0 var(--space-3);
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   background: transparent;
-  color: var(--ink);
+  color: var(--muted);
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--text-small);
   font-weight: 500;
 }
 
 .option[aria-pressed='true'] {
   background: var(--card);
+  color: var(--ink);
   font-weight: 600;
+  box-shadow: 0 0 0 1px var(--border);
 }
 
 .swatches {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .swatch {
@@ -34,19 +59,28 @@
   width: var(--tap);
   height: var(--tap);
   padding: 0;
-  border: 2px solid var(--border);
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.swatch::before {
+  content: '';
+  grid-area: 1 / 1;
+  width: 28px;
+  height: 28px;
   border-radius: var(--radius-pill);
+  background: var(--dot);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.swatch > svg {
+  grid-area: 1 / 1;
   color: #2b3350; /* ติ๊กบนสีไฮไลต์โหมดสว่างเสมอ */
 }
 
-.swatch[aria-pressed='true'] {
-  border-color: var(--ink);
-}
-
-.title {
-  margin-bottom: var(--space-2);
-}
-
-.block + .block {
-  margin-top: var(--space-4);
+.swatch[aria-pressed='true']::before {
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 0 0 4px var(--ink);
 }

@@ -1,4 +1,5 @@
 import { Check } from 'lucide-react'
+import Card from './Card.jsx'
 import { useSettings } from '../hooks/useSettings.js'
 import styles from './ThemeSection.module.css'
 
@@ -20,8 +21,8 @@ export default function ThemeSection() {
   const { settings, update } = useSettings()
 
   return (
-    <section aria-label="หน้าตาของแอป">
-      <div className={styles.block}>
+    <Card as="section" flush aria-label="หน้าตาของแอป" className={styles.card}>
+      <div className={styles.row}>
         <h2 className={styles.title}>ธีม</h2>
         <div role="group" aria-label="เลือกธีม" className={styles.group}>
           {THEME_OPTIONS.map(([value, label]) => (
@@ -38,7 +39,7 @@ export default function ThemeSection() {
         </div>
       </div>
 
-      <div className={styles.block}>
+      <div className={styles.row}>
         <h2 className={styles.title}>สีไฮไลต์งานที่เสร็จ</h2>
         <div role="group" aria-label="เลือกสีไฮไลต์" className={styles.swatches}>
           {ACCENT_OPTIONS.map(([value, label, color]) => (
@@ -46,16 +47,16 @@ export default function ThemeSection() {
               key={value}
               type="button"
               className={styles.swatch}
-              style={{ background: color }}
+              style={{ '--dot': color }}
               aria-label={`สี${label}`}
               aria-pressed={settings.accent === value}
               onClick={() => update({ accent: value })}
             >
-              {settings.accent === value && <Check size={20} strokeWidth={3} aria-hidden="true" />}
+              {settings.accent === value && <Check size={16} strokeWidth={3} aria-hidden="true" />}
             </button>
           ))}
         </div>
       </div>
-    </section>
+    </Card>
   )
 }

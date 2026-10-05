@@ -1,4 +1,4 @@
-import { Share } from 'lucide-react'
+import { Download, Share } from 'lucide-react'
 import Button from './Button.jsx'
 import Card from './Card.jsx'
 import { useInstall } from '../hooks/useInstall.js'
@@ -10,8 +10,8 @@ export default function InstallPrompt() {
   const { installed, canPrompt, isIOS, promptInstall } = useInstall()
 
   return (
-    <Card tone="blue" as="section" aria-label="ติดตั้งแอป" className={styles.card}>
-      <h2>ติดตั้งแอปลงหน้าจอหลัก</h2>
+    <Card as="section" aria-label="ติดตั้งแอป" className={styles.card}>
+      <h2 className={styles.title}>ติดตั้งแอปลงหน้าจอหลัก</h2>
 
       {installed ? (
         <p className={styles.text}>ติดตั้งแล้ว เปิดจากไอคอน "ทำวันนี้" บนหน้าจอหลักได้เลย</p>
@@ -20,7 +20,7 @@ export default function InstallPrompt() {
           <p className={styles.text}>เปิดเต็มจอ เปิดเร็วขึ้น และใช้ได้ตอนไม่มีเน็ต</p>
 
           {canPrompt && (
-            <Button size="lg" block onClick={promptInstall}>
+            <Button icon={Download} onClick={promptInstall}>
               ติดตั้งแอป
             </Button>
           )}

@@ -96,14 +96,7 @@ export default function DataSection() {
 
   return (
     <section aria-label="ข้อมูลของคุณ">
-      <h2 className={styles.title}>ข้อมูลของคุณ</h2>
-
-      <Card className={styles.stack}>
-        <p className={styles.info}>
-          งานและบันทึกเก็บในเบราว์เซอร์ของเครื่องนี้ ไม่มีการส่งขึ้นเซิร์ฟเวอร์
-          ถ้าล้างข้อมูลเบราว์เซอร์ ถอนการติดตั้ง หรือเปลี่ยนเครื่อง ข้อมูลจะหาย ควรสำรองไว้เป็นระยะ
-        </p>
-
+      <Card flush className={styles.stack}>
         <div className={styles.status}>
           <p>
             สถานะ: {persistent ? 'บันทึกลงเครื่องได้ปกติ' : 'บันทึกลงเครื่องไม่ได้ (เก็บชั่วคราว)'}
@@ -121,12 +114,25 @@ export default function DataSection() {
           </p>
         </div>
 
-        <div className={styles.row}>
-          <Button icon={Download} onClick={backup}>
+        <div className={styles.actions}>
+          <Button variant="text" icon={Download} className={styles.action} onClick={backup}>
             สำรองข้อมูล
           </Button>
-          <Button variant="secondary" icon={Upload} onClick={() => fileInput.current?.click()}>
+          <Button
+            variant="text"
+            icon={Upload}
+            className={styles.action}
+            onClick={() => fileInput.current?.click()}
+          >
             กู้คืนข้อมูล
+          </Button>
+          <Button
+            variant="text"
+            icon={Trash2}
+            className={styles.action}
+            onClick={() => setPanel({ type: 'clear' })}
+          >
+            ล้างข้อมูลทั้งหมด
           </Button>
         </div>
         <input
@@ -138,10 +144,6 @@ export default function DataSection() {
           tabIndex={-1}
           onChange={chooseFile}
         />
-
-        <Button variant="soft" icon={Trash2} onClick={() => setPanel({ type: 'clear' })}>
-          ล้างข้อมูลทั้งหมด
-        </Button>
       </Card>
 
       {panel?.type === 'error' && (

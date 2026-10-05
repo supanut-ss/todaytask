@@ -10,12 +10,7 @@ export default function SettingsPage() {
 
   return (
     <div className={styles.layout}>
-      <div className={styles.intro}>
-        <h1>ตั้งค่า</h1>
-        <p style={{ color: 'var(--muted)', fontSize: 'var(--text-small)' }}>
-          ข้อมูลทั้งหมดอยู่ในเครื่องนี้เท่านั้น
-        </p>
-      </div>
+      <h1 className={styles.intro}>ตั้งค่า</h1>
 
       <div className={styles.col}>
         <InstallPrompt />

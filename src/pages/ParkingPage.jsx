@@ -16,10 +16,7 @@ export default function ParkingPage() {
 
   return (
     <>
-      <div>
-        <h1>ที่พักความคิด</h1>
-        <p className={styles.sub}>สิ่งที่แทรกเข้ามาตอนทำงาน จดไว้ก่อน ตอนว่างค่อยจัดการ</p>
-      </div>
+      <h1>ที่พักความคิด</h1>
 
       {notes.length === 0 ? (
         <Card>
@@ -30,18 +27,21 @@ export default function ParkingPage() {
           />
         </Card>
       ) : (
-        <ul className={styles.list}>
-          {notes.map((note) => (
-            <li key={note.id}>
-              <ParkingNote
-                note={note}
-                todayISO={todayISO}
-                onSchedule={schedule}
-                onRemove={discard}
-              />
-            </li>
-          ))}
-        </ul>
+        <Card flush>
+          <ul className={styles.list}>
+            {notes.map((note) => (
+              <li key={note.id}>
+                <ParkingNote
+                  note={note}
+                  todayISO={todayISO}
+                  onSchedule={schedule}
+                  onRemove={discard}
+                  compact
+                />
+              </li>
+            ))}
+          </ul>
+        </Card>
       )}
     </>
   )
