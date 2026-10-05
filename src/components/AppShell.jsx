@@ -27,10 +27,17 @@ export default function AppShell() {
     <div className={styles.shell}>
       <header className={`${styles.column} ${styles.header}`}>
         <div className={styles.headerRow}>
-          <Link to="/" className={styles.brand} aria-label="ทำวันนี้ กลับหน้าแรก">
-            <img src={logoMark} alt="" width={30} height={31} />
-            ทำวันนี้
-          </Link>
+          <div className={styles.left}>
+            {!isDayPage && (
+              <Link to="/" className={styles.back} aria-label="กลับหน้าหลัก" title="กลับหน้าหลัก">
+                <ArrowLeft size={22} strokeWidth={2} aria-hidden="true" />
+              </Link>
+            )}
+            <Link to="/" className={styles.brand} aria-label="ทำวันนี้ กลับหน้าแรก">
+              <img src={logoMark} alt="" width={30} height={31} />
+              ทำวันนี้
+            </Link>
+          </div>
           <Link to="/settings" className={styles.settings} aria-label="ตั้งค่า">
             <SlidersHorizontal size={20} strokeWidth={2} aria-hidden="true" />
           </Link>
@@ -39,12 +46,6 @@ export default function AppShell() {
 
       <div className={styles.scroll}>
         <main className={`${styles.column} ${styles.content}`}>
-          {!isDayPage && (
-            <Link to="/" className={styles.back}>
-              <ArrowLeft size={20} strokeWidth={2} aria-hidden="true" />
-              กลับหน้าหลัก
-            </Link>
-          )}
           <PwaBanners />
           <StorageNotice />
           <Outlet />

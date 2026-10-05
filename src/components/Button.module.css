@@ -27,10 +27,10 @@
   opacity: 0.85;
 }
 
-/* ปุ่มหลัก: ทึบสีหมึก */
+/* ปุ่มหลัก: ทึบสีแบรนด์ */
 .primary {
-  background: var(--ink);
-  color: var(--on-ink);
+  background: var(--brand);
+  color: var(--on-brand);
 }
 
 /* ปุ่มรอง: ขอบสีหมึก */
@@ -64,6 +64,7 @@
 .iconOnly {
   width: var(--tap);
   padding: 0;
+  border-radius: var(--radius-pill);
 }
 
 .block {

@@ -22,6 +22,7 @@ export default function TaskList({ tasks, todayISO, currentId = null, actions })
             canMoveDown={index >= 0 && index < todo.length - 1}
             isCurrent={task.id === currentId}
             onSetCurrent={actions.setCurrent ? () => actions.setCurrent(task) : undefined}
+            onFinish={() => actions.finish(task)}
             onToggle={() => actions.toggle(task)}
             onRename={(title) => actions.rename(task, title)}
             onReorder={(direction) => actions.reorder(task, direction)}

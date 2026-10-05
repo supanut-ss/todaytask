@@ -138,9 +138,7 @@ describe('ที่พักความคิด (เฟส 4)', () => {
     await click(c.querySelector('a[aria-label="ทำวันนี้ กลับหน้าแรก"]'))
     expect(window.location.pathname).toBe('/')
     expect(taskTitles(c)).toEqual(['ซื้อของเข้าบ้าน'])
-    expect(c.querySelector('section[aria-label="ทำอยู่ตอนนี้"]').textContent).toContain(
-      'ซื้อของเข้าบ้าน',
-    )
+    expect(c.querySelector('li[aria-current="true"]').textContent).toContain('ซื้อของเข้าบ้าน')
     expect(c.querySelector('a[href="/parking"]:not([aria-label])').textContent).not.toMatch(/\d/) // ที่พักว่างแล้ว ไม่มีตัวเลข
   })
 

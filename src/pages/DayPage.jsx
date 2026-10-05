@@ -137,13 +137,8 @@ export default function DayPage() {
 
           <DayStrip selected={iso} today={todayISO} counts={counts} pathFor={pathFor} />
 
-          {isToday && (
-            <CurrentTaskCard
-              task={current}
-              allDone={total > 0 && done === total}
-              overdueCount={overdue.length}
-              onFinish={actions.finish}
-            />
+          {isToday && total > 0 && done === total && (
+            <CurrentTaskCard overdueCount={overdue.length} />
           )}
         </div>
         <div className={styles.primary}>
@@ -196,18 +191,21 @@ export default function DayPage() {
               </span>
             </Link>
             {notes.length > 0 && (
-              <ul className={styles.parkingList}>
-                {notes.slice(0, PARKING_PREVIEW).map((note) => (
-                  <li key={note.id}>
-                    <ParkingNote
-                      note={note}
-                      todayISO={todayISO}
-                      onSchedule={scheduleNote}
-                      onRemove={discardNote}
-                    />
-                  </li>
-                ))}
-              </ul>
+              <Card flush>
+                <ul className={styles.parkingList}>
+                  {notes.slice(0, PARKING_PREVIEW).map((note) => (
+                    <li key={note.id}>
+                      <ParkingNote
+                        note={note}
+                        todayISO={todayISO}
+                        onSchedule={scheduleNote}
+                        onRemove={discardNote}
+                        compact
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </Card>
             )}
           </section>
         </div>

@@ -105,8 +105,9 @@ p {
 
 h1 {
   font-size: var(--text-title);
-  font-weight: 600;
-  line-height: 1.4;
+  font-weight: 700;
+  line-height: 1.3;
+  text-wrap: balance;
 }
 
 h2 {

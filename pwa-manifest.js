@@ -10,8 +10,8 @@ export const manifest = {
   start_url: '/',
   scope: '/',
   display: 'standalone',
-  background_color: '#F7F8FC',
-  theme_color: '#F7F8FC',
+  background_color: '#F8F7FD',
+  theme_color: '#F8F7FD',
   categories: ['productivity'],
   icons: [
     { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },

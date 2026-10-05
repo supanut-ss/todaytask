@@ -27,7 +27,9 @@ export default function DayStrip({ selected, today, counts, pathFor }) {
           >
             <span className={styles.weekday}>{weekdayShort(iso)}</span>
             <span className={styles.date}>{dayOfMonth(iso)}</span>
-            <span className={styles.count}>{total || '–'}</span>
+            <span className={styles.count} aria-hidden="true">
+              {total > 0 && <span className={styles.dot} />}
+            </span>
           </Link>
         )
       })}

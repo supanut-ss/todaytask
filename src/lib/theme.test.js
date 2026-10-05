@@ -12,7 +12,7 @@ const setDarkPreference = (dark) => {
 describe('theme', () => {
   const originalMatchMedia = window.matchMedia
   beforeEach(() => {
-    document.head.innerHTML = '<meta name="theme-color" content="#F7F8FC">'
+    document.head.innerHTML = '<meta name="theme-color" content="#F8F7FD">'
     delete root.dataset.theme
     delete root.dataset.accent
     window.localStorage.clear()
@@ -86,7 +86,7 @@ describe('theme', () => {
       run()
       expect(root.dataset.theme).toBe('dark')
       expect(root.dataset.accent).toBe('mint')
-      expect(document.querySelector('meta[name="theme-color"]').content).toBe('#1B2036')
+      expect(document.querySelector('meta[name="theme-color"]').content).toBe('#17152B')
     })
 
     it('ผู้ใช้เลือกสว่าง -> ไม่เป็นมืด แม้เครื่องเป็นโหมดมืด', () => {

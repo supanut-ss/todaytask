@@ -1,37 +1,22 @@
+/* แถบวัน: ตัวเลขวันเป็นวงกลม วันที่เลือกเป็นวงกลมสีแบรนด์ทึบ (จุดเด่นเดียวของหน้า) */
 .strip {
   display: flex;
-  gap: 6px;
+  justify-content: space-between;
+  gap: var(--space-1);
 }
 
 .day {
   flex: 1;
   min-width: 0;
-  min-height: 68px;
+  min-height: var(--tap);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--card);
+  gap: var(--space-1);
+  padding: var(--space-1) 0;
   color: var(--ink);
   text-decoration: none;
   line-height: 1.2;
-}
-
-/* วันนี้ที่ยังไม่ได้เลือก: ขอบสีหมึกให้รู้ว่าอยู่ตรงไหน */
-.today {
-  border-color: var(--ink);
-}
-
-.selected {
-  background: var(--blue);
-  border-color: var(--blue);
-}
-
-.selected.today {
-  border-color: var(--ink);
 }
 
 .weekday {
@@ -40,18 +25,53 @@
 }
 
 .date {
-  font-size: var(--text-heading);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-body);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* วันนี้ที่ยังไม่ได้เลือก: วงแหวนสีแบรนด์ */
+.today .date {
+  border-color: var(--brand);
+}
+
+.selected .date {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.selected .weekday {
+  color: var(--ink);
   font-weight: 600;
 }
 
+/* จุดบอกว่าวันนั้นมีงาน (จำนวนอยู่ใน aria-label) */
 .count {
-  font-size: var(--text-small);
-  color: var(--muted);
+  display: grid;
+  place-items: center;
+  height: 6px;
 }
 
-.selected .weekday,
-.selected .count {
-  color: var(--ink);
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--muted);
+}
+
+.day:hover .date {
+  background: var(--blue);
+}
+
+.selected:hover .date {
+  background: var(--brand);
 }
 
 @media (min-width: 768px) {
@@ -59,7 +79,8 @@
     gap: var(--space-2);
   }
 
-  .day {
-    min-height: 76px;
+  .date {
+    width: 44px;
+    height: 44px;
   }
 }

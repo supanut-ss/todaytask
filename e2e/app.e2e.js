@@ -53,9 +53,9 @@ describe('ใช้งานหลัก', () => {
     await page.getByRole('button', { name: 'ปิด', exact: true }).click()
 
     expect(await text(page)).toContain('เสร็จ 0 จาก 2')
-    await page.getByRole('button', { name: 'เสร็จแล้ว', exact: true }).click() // จากการ์ดทำอยู่ตอนนี้
+    await page.getByRole('button', { name: /^เสร็จแล้ว: / }).click() // จากแถวงานที่ทำอยู่ตอนนี้
     expect(await text(page)).toContain('เสร็จ 1 จาก 2')
-    expect(await text(page, 'section[aria-label="ทำอยู่ตอนนี้"]')).toContain('โอนค่าเช่าห้อง')
+    expect(await text(page, 'li[aria-current="true"]')).toContain('โอนค่าเช่าห้อง')
 
     await page.getByRole('textbox', { name: 'จดสิ่งที่แทรกเข้ามา' }).fill('ซื้อหมึกปริ้นท์')
     await page.keyboard.press('Enter')
@@ -329,7 +329,7 @@ describe('ธีมและการเข้าถึง (axe บนเบร�
       await page.evaluate(() =>
         document.querySelector('meta[name="theme-color"]').content.toLowerCase(),
       ),
-    ).toBe('#1b2036')
+    ).toBe('#17152b')
 
     await page.getByRole('button', { name: 'สว่าง', exact: true }).click()
     expect(await theme()).toBe('light')

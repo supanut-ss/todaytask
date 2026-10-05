@@ -26,6 +26,7 @@ export default function TaskRow({
   canMoveDown,
   isCurrent = false,
   onSetCurrent,
+  onFinish,
   onToggle,
   onRename,
   onReorder,
@@ -53,7 +54,10 @@ export default function TaskRow({
   }
 
   return (
-    <li className={styles.item}>
+    <li
+      className={`${styles.item} ${isCurrent && !done ? styles.current : ''}`}
+      aria-current={isCurrent && !done ? 'true' : undefined}
+    >
       <div className={styles.row}>
         <button
           type="button"
@@ -89,12 +93,23 @@ export default function TaskRow({
             />
           </form>
         ) : (
-          <p className={`${styles.title} ${done ? styles.titleDone : ''}`}>
-            <span>{task.title}</span>
-          </p>
+          <div className={styles.main}>
+            {isCurrent && !done && <span className={styles.badge}>ทำอยู่ตอนนี้</span>}
+            <p className={`${styles.title} ${done ? styles.titleDone : ''}`}>
+              <span>{task.title}</span>
+            </p>
+          </div>
         )}
 
-        {isCurrent && !done && <span className={styles.badge}>ทำอยู่</span>}
+        {isCurrent && !done && !editing && onFinish && (
+          <Button
+            className={styles.finish}
+            icon={Check}
+            iconOnly
+            aria-label={`เสร็จแล้ว: ${task.title}`}
+            onClick={onFinish}
+          />
+        )}
 
         <button
           type="button"

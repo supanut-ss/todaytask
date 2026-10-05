@@ -41,7 +41,7 @@ export const byText = (container, text) =>
 
 /** ข้อความชื่องานทุกแถบตามลำดับที่แสดง */
 export const taskTitles = (container) =>
-  [...container.querySelectorAll('ul li > div > p')].map((p) => p.textContent)
+  [...container.querySelectorAll('ul li > div > div > p')].map((p) => p.textContent)
 
 /** ใส่งานลง storage ก่อนเปิดหน้า */
 export function seedTasks(tasks) {

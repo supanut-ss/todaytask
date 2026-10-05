@@ -9,29 +9,33 @@
   color-scheme: light;
 
   /* พื้นผิว */
-  --bg: #f7f8fc;
+  --bg: #f8f7fd;
   --card: #ffffff;
-  --border: #e6e9f2;
-  --input-border: #8189a7; /* คอนทราสต์ 3:1 กับพื้นหลังและการ์ด */
+  --border: #e7e4f4;
+  --input-border: #837e9f; /* คอนทราสต์ 3:1 กับพื้นหลังและการ์ด */
 
   /* ตัวอักษร */
-  --ink: #2b3350;
-  --ink-soft: #3f4a70; /* ข้อความรองบนพื้นพาสเทล */
-  --muted: #5a6385; /* ข้อความรองบนพื้นสว่าง (ผ่าน AA) */
+  --ink: #2a2550;
+  --ink-soft: #3f3a6a; /* ข้อความรองบนพื้นพาสเทล */
+  --muted: #5a5580; /* ข้อความรองบนพื้นสว่าง (ผ่าน AA) */
   --on-ink: #ffffff; /* ตัวอักษรบนปุ่มสีหมึก */
 
+  /* สีแบรนด์ (ม่วงจากโลโก้): ปุ่มหลัก วงโฟกัส แถบความคืบหน้า */
+  --brand: #6a52d9;
+  --on-brand: #ffffff;
+
   /* พาสเทล */
-  --blue: #cfe0ff; /* วันที่เลือก, การ์ดทำอยู่ตอนนี้ */
-  --mint: #cdefe0; /* งานเสร็จ */
-  --peach: #ffd9c9; /* งานค้าง, ที่พักความคิด */
-  --progress: #6c8cd5; /* แถบความคืบหน้า และวงโฟกัสคีย์บอร์ด */
+  --blue: #e4defc; /* ม่วงอ่อน: วันที่เลือก, แถวงานที่ทำอยู่ตอนนี้ */
+  --mint: #cbf0e4; /* มิ้นต์จากโลโก้: งานเสร็จ */
+  --peach: #ffdcca; /* ส้มอ่อนจากโลโก้: งานค้าง, ที่พักความคิด */
+  --progress: #6a52d9; /* แถบความคืบหน้า และวงโฟกัสคีย์บอร์ด */
 
   /* ไฮไลต์ขีดงานที่เสร็จ (ผู้ใช้เลือกสีได้) และสีตัวอักษรของงานที่เสร็จ */
   --marker: #ffe98a;
   --done-text: var(--muted);
 
   /* รูปทรง */
-  --radius: 16px;
+  --radius: 20px;
   --radius-sm: 12px;
   --radius-pill: 999px;
 
@@ -45,7 +49,7 @@
 
   /* ตัวอักษร */
   --font: 'IBM Plex Sans Thai', 'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --text-title: 28px;
+  --text-title: 34px;
   --text-heading: 18px;
   --text-body: 16px;
   --text-small: 14px;
@@ -76,18 +80,20 @@
 /* โหมดมืด: พาสเทลโทนหม่น ไม่ใช้ดำสนิท */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #1b2036;
-  --card: #242b47;
-  --border: #343c5c;
-  --input-border: #7d86a8;
-  --ink: #e9ecf8;
-  --ink-soft: #c7cde6;
-  --muted: #a3abc8;
-  --on-ink: #1b2036;
-  --blue: #34497f;
-  --mint: #2c5a4b;
-  --peach: #6a4a44;
-  --progress: #8fb0ff;
+  --bg: #17152b;
+  --card: #211e3d;
+  --border: #332f58;
+  --input-border: #8079b0;
+  --ink: #ece9fb;
+  --ink-soft: #cdc8ee;
+  --muted: #aaa5d0;
+  --on-ink: #17152b;
+  --brand: #a595ff;
+  --on-brand: #17152b;
+  --blue: #3b3478;
+  --mint: #1f5a4c;
+  --peach: #6a4637;
+  --progress: #a595ff;
   --marker: #4f4726;
   --done-text: var(--ink-soft); /* ตัวอักษร muted บนไฮไลต์เข้มไม่ผ่านคอนทราสต์ จึงใช้ ink-soft */
 }

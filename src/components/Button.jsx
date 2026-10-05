@@ -17,6 +17,10 @@ export default function Button({
   children,
   ...rest
 }) {
+  // ปุ่มไอคอนล้วน: ใส่ title เท่ากับ aria-label ให้เห็นคำอธิบายเมื่อชี้เมาส์
+  if (iconOnly && rest['aria-label'] && rest.title === undefined)
+    rest = { ...rest, title: rest['aria-label'] }
+
   const classes = [
     styles.button,
     styles[variant],

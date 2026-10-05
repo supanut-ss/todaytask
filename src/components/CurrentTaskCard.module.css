@@ -4,18 +4,6 @@
   gap: var(--space-3);
 }
 
-.label {
-  font-size: var(--text-small);
-  color: var(--ink-soft);
-}
-
-.title {
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-
 .doneTitle {
   font-size: var(--text-heading);
   font-weight: 600;

@@ -211,7 +211,7 @@ const TWO_DAYS_AGO = addDays(TODAY, -2)
 const group = (c) => c.querySelector('section[aria-label="ค้างจากก่อนหน้า"]')
 const overdueRows = (c) => [...group(c).querySelectorAll('li')]
 const overdueTitles = (c) => overdueRows(c).map((li) => li.querySelector('span').textContent)
-const currentCard = (c) => c.querySelector('section[aria-label="ทำอยู่ตอนนี้"]')
+const currentCard = (c) => c.querySelector('li[aria-current="true"]')
 const inGroup = (c, text) => byText(group(c), text)
 
 describe('งานค้าง (เฟส 3)', () => {
@@ -326,7 +326,7 @@ describe('ทำอยู่ตอนนี้ (เฟส 3)', () => {
   it('กดเสร็จแล้ว: งานถัดไปขึ้นมาแทน ตัวนับเพิ่ม และเลิกทำได้', async () => {
     seedTasks([t('ก', { order: 0 }), t('ข', { order: 1 })])
     const c = await mount('/')
-    await click(byText(currentCard(c), 'เสร็จแล้ว'))
+    await click(currentCard(c).querySelector('button[aria-label^="เสร็จแล้ว:"]'))
     expect(currentCard(c).textContent).toContain('ข')
     expect(counter(c)).toBe('เสร็จ 1 จาก 2')
     expect(c.textContent).toContain('เสร็จแล้ว: ก')
@@ -357,7 +357,7 @@ describe('ทำอยู่ตอนนี้ (เฟส 3)', () => {
     const c = await mount('/')
     await click(more(c, 'ข'))
     await click(c.querySelector('button[aria-label="ทำอันนี้ตอนนี้: ข"]'))
-    await click(byText(currentCard(c), 'เสร็จแล้ว'))
+    await click(currentCard(c).querySelector('button[aria-label^="เสร็จแล้ว:"]'))
     expect(currentCard(c).textContent).toContain('ก')
   })
 
@@ -372,7 +372,7 @@ describe('ทำอยู่ตอนนี้ (เฟส 3)', () => {
   it('ทำครบทุกงาน: ขึ้นข้อความยินดี (ไม่มีงานค้าง)', async () => {
     seedTasks([t('ก')])
     const c = await mount('/')
-    await click(byText(currentCard(c), 'เสร็จแล้ว'))
+    await click(currentCard(c).querySelector('button[aria-label^="เสร็จแล้ว:"]'))
     const done = c.querySelector('section[aria-label="ทำครบแล้ว"]')
     expect(done.textContent).toContain('ครบทุกงานของวันนี้แล้ว')
     expect(done.textContent).toContain('ไม่มีงานค้างด้วย')
@@ -382,7 +382,7 @@ describe('ทำอยู่ตอนนี้ (เฟส 3)', () => {
   it('ทำครบวันนี้แต่ยังมีงานค้าง: บอกจำนวนที่ค้างอยู่', async () => {
     seedTasks([t('วันนี้'), t('ค้าง', { date: YESTERDAY })])
     const c = await mount('/')
-    await click(byText(currentCard(c), 'เสร็จแล้ว'))
+    await click(currentCard(c).querySelector('button[aria-label^="เสร็จแล้ว:"]'))
     expect(c.querySelector('section[aria-label="ทำครบแล้ว"]').textContent).toContain(
       'ยังมีงานค้างอีก 1 งาน',
     )
