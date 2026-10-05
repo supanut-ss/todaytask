@@ -6,6 +6,7 @@ import {
   removeTask,
   renameTask,
   reorderTask,
+  reorderTo,
   restoreTask,
   toggleTask,
 } from '../lib/tasks.js'
@@ -50,6 +51,7 @@ export function useTasks() {
       return snapshot
     },
     reorder: (id, direction) => setTasks((all) => reorderTask(all, id, direction)),
+    reorderTo: (id, index) => setTasks((all) => reorderTo(all, id, index)),
     restore: (snapshot) => setTasks((all) => restoreTask(all, snapshot)),
     prune: () => {
       const next = pruneTasks(tasks)

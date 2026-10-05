@@ -66,6 +66,11 @@
   background: var(--muted);
 }
 
+/* ทำครบทุกงานของวันนั้นแล้ว */
+.dotDone {
+  background: var(--teal);
+}
+
 .day:hover .date {
   background: var(--blue);
 }

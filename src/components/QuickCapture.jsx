@@ -5,7 +5,7 @@ import Button from './Button.jsx'
 import TextInput from './TextInput.jsx'
 import { useParking } from '../hooks/useParking.js'
 import { useSnackbar } from '../hooks/useSnackbar.js'
-import { MAX_TITLE } from '../lib/tasks.js'
+import { MAX_TITLE, splitLines } from '../lib/tasks.js'
 import styles from './QuickCapture.module.css'
 
 /** ช่องจดสิ่งที่แทรกเข้ามา ติดล่างจอทุกหน้า
@@ -25,6 +25,18 @@ export default function QuickCapture() {
     show('จดไว้แล้ว', { actionLabel: 'ดู', onAction: () => navigate('/parking') })
   }
 
+  // วางข้อความหลายบรรทัด -> จดทีละบรรทัดเข้าที่พักความคิด
+  const paste = (event) => {
+    const lines = splitLines(event.clipboardData?.getData('text'))
+    if (lines.length < 2) return
+    event.preventDefault()
+    lines.forEach((line) => add(line))
+    show(`จดไว้ ${lines.length} รายการ`, {
+      actionLabel: 'ดู',
+      onAction: () => navigate('/parking'),
+    })
+  }
+
   return (
     <div className={styles.bar}>
       <form className={styles.form} onSubmit={submit} aria-label="จดสิ่งที่แทรกเข้ามา">
@@ -36,6 +48,7 @@ export default function QuickCapture() {
           placeholder="มีอะไรแทรกเข้ามา? จดไว้ก่อน"
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onPaste={paste}
           maxLength={MAX_TITLE}
           enterKeyHint="send"
           autoComplete="off"

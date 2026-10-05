@@ -23,6 +23,7 @@ export default function TaskList({ tasks, todayISO, currentId = null, actions })
             isCurrent={task.id === currentId}
             onSetCurrent={actions.setCurrent ? () => actions.setCurrent(task) : undefined}
             onFinish={() => actions.finish(task)}
+            onDropAt={actions.reorderTo ? (index) => actions.reorderTo(task, index) : undefined}
             onToggle={() => actions.toggle(task)}
             onRename={(title) => actions.rename(task, title)}
             onReorder={(direction) => actions.reorder(task, direction)}

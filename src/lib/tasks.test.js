@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
   addTask,
+  completionStreak,
   countsByDate,
+  isDayComplete,
   moveTask,
   nextOrder,
   overdueTasks,
@@ -10,8 +12,10 @@ import {
   removeTask,
   renameTask,
   reorderTask,
+  reorderTo,
   restoreTask,
   sortTasks,
+  splitLines,
   tasksOnDate,
   toggleTask,
 } from './tasks.js'
@@ -244,5 +248,85 @@ describe('tasks', () => {
       expect(pruneTasks(all, NOW2, 7)).toEqual([])
       expect(pruneTasks(all, NOW2, 30)).toBe(all)
     })
+  })
+})
+
+describe('ลากจัดลำดับ (reorderTo)', () => {
+  it('ย้ายไปตำแหน่งที่ต้องการ และเลขลำดับต่อเนื่อง', () => {
+    const all = build('ก', 'ข', 'ค', 'ง')
+    const id = all.find((x) => x.title === 'ง').id
+    expect(titles(tasksOnDate(reorderTo(all, id, 1), D1))).toEqual(['ก', 'ง', 'ข', 'ค'])
+    const first = all.find((x) => x.title === 'ก').id
+    expect(titles(tasksOnDate(reorderTo(all, first, 99), D1))).toEqual(['ข', 'ค', 'ง', 'ก'])
+  })
+
+  it('ตำแหน่งเดิม/งานที่เสร็จแล้ว/ไม่มีงานนั้น: ไม่เปลี่ยน', () => {
+    const all = build('ก', 'ข')
+    expect(reorderTo(all, all[0].id, 0)).toBe(all)
+    expect(reorderTo(all, 'ไม่มี', 0)).toBe(all)
+    const done = toggleTask(all, all[0].id, NOW)
+    expect(reorderTo(done, all[0].id, 1)).toBe(done)
+  })
+})
+
+describe('สถิติทำครบติดต่อกัน', () => {
+  const T = '2026-10-10'
+  const day = (date, ...states) =>
+    states.map((status, i) => ({
+      id: `${date}-${i}`,
+      title: `งาน${i}`,
+      status,
+      date,
+      order: i,
+      createdAt: `${date}T01:00:00.000Z`,
+      doneAt: status === 'done' ? `${date}T05:00:00.000Z` : null,
+    }))
+
+  it('วันครบ = มีงานและเสร็จทุกงาน', () => {
+    const all = [...day('2026-10-09', 'done', 'done'), ...day('2026-10-08', 'done', 'todo')]
+    expect(isDayComplete(all, '2026-10-09')).toBe(true)
+    expect(isDayComplete(all, '2026-10-08')).toBe(false)
+    expect(isDayComplete(all, '2026-10-07')).toBe(false) // ไม่มีงานเลย
+  })
+
+  it('นับย้อนจากวันนี้ที่ครบ', () => {
+    const all = [...day(T, 'done'), ...day('2026-10-09', 'done'), ...day('2026-10-08', 'done')]
+    expect(completionStreak(all, T)).toBe(3)
+  })
+
+  it('วันนี้ยังไม่ครบ: นับจากเมื่อวาน ไม่ทำให้สถิติขาด', () => {
+    const all = [
+      ...day(T, 'done', 'todo'),
+      ...day('2026-10-09', 'done'),
+      ...day('2026-10-08', 'done'),
+    ]
+    expect(completionStreak(all, T)).toBe(2)
+  })
+
+  it('วันที่ขาด (ไม่ครบ/ไม่มีงาน) ตัดสถิติ', () => {
+    const all = [
+      ...day(T, 'done'),
+      ...day('2026-10-09', 'done', 'todo'),
+      ...day('2026-10-08', 'done'),
+    ]
+    expect(completionStreak(all, T)).toBe(1)
+    expect(completionStreak([], T)).toBe(0)
+  })
+})
+
+describe('แยกข้อความหลายบรรทัด (splitLines)', () => {
+  it('ตัดสัญลักษณ์นำหน้าและบรรทัดว่าง', () => {
+    const text = ['- ซื้อนม', '', '• ส่งเมล', '1. โทรหาพี่', '2) จ่ายบิล', '  งานธรรมดา  '].join(
+      '\n',
+    )
+    expect(splitLines(text)).toEqual(['ซื้อนม', 'ส่งเมล', 'โทรหาพี่', 'จ่ายบิล', 'งานธรรมดา'])
+  })
+
+  it('บรรทัดเดียว/ว่าง/เกินจำนวนสูงสุด', () => {
+    expect(splitLines('งานเดียว')).toEqual(['งานเดียว'])
+    expect(splitLines(' \n ')).toEqual([])
+    expect(splitLines(null)).toEqual([])
+    const many = Array.from({ length: 80 }, (_, i) => `ข${i}`).join('\n')
+    expect(splitLines(many)).toHaveLength(50)
   })
 })

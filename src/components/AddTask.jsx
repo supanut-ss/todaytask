@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Plus } from 'lucide-react'
 import Button from './Button.jsx'
 import TextInput from './TextInput.jsx'
-import { MAX_TITLE } from '../lib/tasks.js'
+import { MAX_TITLE, splitLines } from '../lib/tasks.js'
 import styles from './AddTask.module.css'
 
 /** แถว "+ เพิ่มงาน" กดแล้วเป็นช่องพิมพ์ กด Enter เพิ่มได้ต่อเนื่องหลายงาน
@@ -21,6 +21,15 @@ export default function AddTask({ label, placeholder, open, onOpenChange, onAdd 
     onAdd(title)
     setTitle('')
     inputRef.current?.focus() // พิมพ์งานต่อไปได้เลย
+  }
+
+  // วางข้อความหลายบรรทัด (เช่นลิสต์จากโน้ต) -> แตกเป็นงานทีละบรรทัด
+  const paste = (event) => {
+    const lines = splitLines(event.clipboardData?.getData('text'))
+    if (lines.length < 2) return
+    event.preventDefault()
+    lines.forEach((line) => onAdd(line))
+    setTitle('')
   }
 
   const close = () => {
@@ -50,6 +59,7 @@ export default function AddTask({ label, placeholder, open, onOpenChange, onAdd 
         enterKeyHint="done"
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={(e) => e.key === 'Escape' && close()}
+        onPaste={paste}
       />
       <div className={styles.buttons}>
         <Button type="submit" disabled={!title.trim()}>

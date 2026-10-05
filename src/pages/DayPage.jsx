@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { CalendarDays, ChevronRight } from 'lucide-react'
+import { CalendarDays, ChevronRight, Flame } from 'lucide-react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import AddTask from '../components/AddTask.jsx'
 import Button from '../components/Button.jsx'
@@ -18,7 +18,13 @@ import { useSnackbar } from '../hooks/useSnackbar.js'
 import { useTasks } from '../hooks/useTasks.js'
 import { useToday } from '../hooks/useToday.js'
 import { daysFrom, formatThai, isValidISODate, relativeLabel, stripStart } from '../lib/date.js'
-import { countsByDate, overdueTasks, pickCurrent, tasksOnDate } from '../lib/tasks.js'
+import {
+  completionStreak,
+  countsByDate,
+  overdueTasks,
+  pickCurrent,
+  tasksOnDate,
+} from '../lib/tasks.js'
 import styles from './DayPage.module.css'
 
 /** หน้า Main: แผนของวันที่เลือก (ค่าเริ่มต้น = วันนี้)
@@ -34,7 +40,7 @@ export default function DayPage() {
   const iso = date ?? todayISO
   const valid = isValidISODate(iso)
 
-  const { tasks, add, toggle, rename, remove, move, reorder, restore } = useTasks()
+  const { tasks, add, toggle, rename, remove, move, reorder, reorderTo, restore } = useTasks()
   const { show } = useSnackbar()
   const { notes, schedule: scheduleNote, discard: discardNote } = useParkingActions(todayISO)
   const { preferred, choose } = useCurrentTask()
@@ -51,6 +57,7 @@ export default function DayPage() {
     () => (isToday ? overdueTasks(tasks, todayISO) : []),
     [tasks, todayISO, isToday],
   )
+  const streak = useMemo(() => completionStreak(tasks, todayISO), [tasks, todayISO])
   const current = useMemo(
     () => (isToday ? pickCurrent(tasks, todayISO, preferred) : null),
     [tasks, todayISO, preferred, isToday],
@@ -82,6 +89,7 @@ export default function DayPage() {
     setCurrent: isToday ? (task) => choose(task) : undefined,
     rename: (task, title) => rename(task.id, title),
     reorder: (task, direction) => reorder(task.id, direction),
+    reorderTo: (task, index) => reorderTo(task.id, index),
     remove: (task) => {
       const snapshot = remove(task.id)
       if (snapshot) withUndo('ลบงานแล้ว', snapshot)
@@ -105,6 +113,12 @@ export default function DayPage() {
             <div>
               <h1>{label}</h1>
               <p className={styles.sub}>{formatThai(iso, { withYear: true })}</p>
+              {isToday && streak > 0 && (
+                <p className={styles.streak}>
+                  <Flame size={16} aria-hidden="true" />
+                  ทำครบติดต่อกัน {streak} วัน
+                </p>
+              )}
             </div>
             <TextInput
               className={styles.jump}
@@ -138,7 +152,7 @@ export default function DayPage() {
           <DayStrip selected={iso} today={todayISO} counts={counts} pathFor={pathFor} />
 
           {isToday && total > 0 && done === total && (
-            <CurrentTaskCard overdueCount={overdue.length} />
+            <CurrentTaskCard overdueCount={overdue.length} streak={streak} />
           )}
         </div>
         <div className={styles.primary}>

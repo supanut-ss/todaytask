@@ -10,6 +10,7 @@ export default function DayStrip({ selected, today, counts, pathFor }) {
     <nav aria-label="เลือกวัน" className={styles.strip}>
       {days.map((iso) => {
         const total = counts[iso]?.total ?? 0
+        const complete = total > 0 && counts[iso].done === total
         const classes = [
           styles.day,
           iso === selected && styles.selected,
@@ -23,12 +24,12 @@ export default function DayStrip({ selected, today, counts, pathFor }) {
             to={pathFor(iso)}
             className={classes}
             aria-current={iso === selected ? 'date' : undefined}
-            aria-label={`${formatThai(iso)} ${total ? `${total} งาน` : 'ไม่มีงาน'}`}
+            aria-label={`${formatThai(iso)} ${total ? `${total} งาน` : 'ไม่มีงาน'}${complete ? ' ทำครบแล้ว' : ''}`}
           >
             <span className={styles.weekday}>{weekdayShort(iso)}</span>
             <span className={styles.date}>{dayOfMonth(iso)}</span>
             <span className={styles.count} aria-hidden="true">
-              {total > 0 && <span className={styles.dot} />}
+              {total > 0 && <span className={`${styles.dot} ${complete ? styles.dotDone : ''}`} />}
             </span>
           </Link>
         )

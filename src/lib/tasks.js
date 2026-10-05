@@ -2,6 +2,7 @@
    งาน = { id, title, status: 'todo' | 'done', date: 'YYYY-MM-DD', order, createdAt, doneAt }
    ทุกฟังก์ชันรับรายการงานทั้งหมด แล้วคืนรายการใหม่ (ไม่แก้ของเดิม) */
 
+import { addDays } from './date.js'
 import { newId } from './id.js'
 
 export const MAX_TITLE = 200
@@ -109,6 +110,20 @@ export function reorderTask(all, id, direction) {
   return all.map((t) => (order.has(t.id) ? { ...t, order: order.get(t.id) } : t))
 }
 
+/** ย้ายงานที่ยังไม่เสร็จไปอยู่ตำแหน่ง toIndex (0 = บนสุด) ในงานที่ยังไม่เสร็จของวันเดียวกัน (ใช้ตอนลากจัดลำดับ) */
+export function reorderTo(all, id, toIndex) {
+  const task = all.find((t) => t.id === id)
+  if (!task || isDone(task)) return all
+  const todo = sortTasks(all.filter((t) => t.date === task.date && !isDone(t)))
+  const from = todo.findIndex((t) => t.id === id)
+  const to = Math.max(0, Math.min(todo.length - 1, toIndex))
+  if (from === to) return all
+  const next = [...todo]
+  next.splice(to, 0, next.splice(from, 1)[0])
+  const order = new Map(next.map((t, i) => [t.id, i]))
+  return all.map((t) => (order.has(t.id) ? { ...t, order: order.get(t.id) } : t))
+}
+
 /** งานที่ยังไม่เสร็จของวันนั้น (ใช้ตัดสินว่าปุ่มขึ้น/ลงกดได้ไหม) */
 export const todoOnDate = (all, date) => tasksOnDate(all, date).filter((t) => !isDone(t))
 
@@ -141,4 +156,32 @@ export function pruneTasks(all, now = new Date(), keepDays = KEEP_DONE_DAYS) {
     return Number.isNaN(doneAt) || doneAt >= cutoff
   })
   return keep.length === all.length ? all : keep
+}
+
+/** วันที่ "ทำครบ" = มีงานอย่างน้อย 1 งาน และเสร็จทุกงาน */
+export function isDayComplete(all, date) {
+  const day = all.filter((t) => t.date === date)
+  return day.length > 0 && day.every(isDone)
+}
+
+/** จำนวนวันที่ทำครบติดต่อกัน นับย้อนจากวันนี้
+ *  ถ้าวันนี้ยังไม่ครบ จะนับจากเมื่อวาน (วันนี้ยังทำได้อีก จึงยังไม่ทำให้สถิติขาด)
+ *  วันที่ไม่มีงานเลยถือว่าขาด (งานที่เสร็จเกิน 30 วันถูกล้าง จึงนับได้ไม่เกินนั้น) */
+export function completionStreak(all, todayISO) {
+  let day = isDayComplete(all, todayISO) ? todayISO : addDays(todayISO, -1)
+  let count = 0
+  while (count <= KEEP_DONE_DAYS && isDayComplete(all, day)) {
+    count += 1
+    day = addDays(day, -1)
+  }
+  return count
+}
+
+/** แยกข้อความหลายบรรทัด (เช่นวางลิสต์) เป็นชื่องานทีละบรรทัด ตัดสัญลักษณ์นำหน้า (- • * 1.) และบรรทัดว่าง */
+export function splitLines(text, limit = 50) {
+  return String(text ?? '')
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^\s*(?:[-•*·]|\d+[.)])\s+/, '').trim())
+    .filter(Boolean)
+    .slice(0, limit)
 }

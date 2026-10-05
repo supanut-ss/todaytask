@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { act } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { addDays, today } from '../lib/date.js'
 import {
@@ -421,6 +422,64 @@ describe('ทางเข้าที่พักความคิด', () => {
     expect(link.textContent).toContain('2')
     await click(link)
     expect(window.location.pathname).toBe('/parking')
+  })
+})
+
+describe('ฟีเจอร์ใหม่: สถิติ ฉลอง วางหลายบรรทัด', () => {
+  beforeEach(() => window.localStorage.clear())
+  afterEach(cleanup)
+
+  const doneTask = (title, date) =>
+    t(title, { date, status: 'done', doneAt: new Date().toISOString() })
+
+  it('แสดงสถิติทำครบติดต่อกัน และจุดเขียวที่แถบวันของวันที่ครบ', async () => {
+    seedTasks([
+      doneTask('เมื่อวาน', YESTERDAY),
+      doneTask('วานซืน', addDays(TODAY, -2)),
+      t('วันนี้'),
+    ])
+    const c = await mount('/')
+    expect(c.textContent).toContain('ทำครบติดต่อกัน 2 วัน')
+    const links = c.querySelectorAll('nav[aria-label="เลือกวัน"] a')
+    expect(links[0].getAttribute('aria-label')).not.toContain('ทำครบแล้ว') // วันนี้ยังไม่ครบ
+  })
+
+  it('ไม่มีสถิติเมื่อยังไม่มีวันที่ครบ', async () => {
+    seedTasks([t('ก')])
+    const c = await mount('/')
+    expect(c.textContent).not.toContain('ทำครบติดต่อกัน')
+  })
+
+  it('ทำครบวันนี้: การ์ดยินดีบอกสถิติ และแถบวันของวันนี้ขึ้นว่าทำครบแล้ว', async () => {
+    seedTasks([doneTask('เมื่อวาน', YESTERDAY), t('ก')])
+    const c = await mount('/')
+    await click(currentCard(c).querySelector('button[aria-label^="เสร็จแล้ว:"]'))
+    const card = c.querySelector('section[aria-label="ทำครบแล้ว"]')
+    expect(card.textContent).toContain('ทำครบติดต่อกัน 2 วันแล้ว')
+    expect(c.querySelector('nav[aria-label="เลือกวัน"] a').getAttribute('aria-label')).toContain(
+      'ทำครบแล้ว',
+    )
+  })
+
+  it('วางข้อความหลายบรรทัดในช่องเพิ่มงาน: แตกเป็นงานทีละบรรทัด', async () => {
+    const c = await mount('/')
+    await click(byText(c, 'เพิ่มงานแรก'))
+    const text = ['- ซื้อนม', '', '• ส่งเมล', '1. โทรหาพี่'].join('\n')
+    const event = new Event('paste', { bubbles: true, cancelable: true })
+    event.clipboardData = { getData: () => text }
+    await act(async () => input(c).dispatchEvent(event))
+    expect(event.defaultPrevented).toBe(true)
+    expect(savedTasks().map((x) => x.title)).toEqual(['ซื้อนม', 'ส่งเมล', 'โทรหาพี่'])
+  })
+
+  it('วางบรรทัดเดียว: ปล่อยให้วางตามปกติ (ไม่ดักไว้)', async () => {
+    const c = await mount('/')
+    await click(byText(c, 'เพิ่มงานแรก'))
+    const event = new Event('paste', { bubbles: true, cancelable: true })
+    event.clipboardData = { getData: () => 'งานเดียว' }
+    await act(async () => input(c).dispatchEvent(event))
+    expect(event.defaultPrevented).toBe(false)
+    expect(savedTasks()).toHaveLength(0)
   })
 })
 

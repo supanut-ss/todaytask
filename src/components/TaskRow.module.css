@@ -1,4 +1,5 @@
 .item {
+  position: relative;
   border-bottom: 1px solid var(--border);
 }
 
@@ -148,4 +149,52 @@
 .finish {
   flex: none;
   margin-left: var(--space-2);
+}
+
+/* แถวงานรับท่าทาง: แนวตั้งยังเลื่อนหน้าได้ แนวนอนใช้ปัดซ้ายเพื่อลบ */
+.row {
+  position: relative;
+  background: inherit;
+  touch-action: pan-y;
+  user-select: none; /* ลากแถวด้วยเมาส์ไม่ให้ไปลากคลุมข้อความ */
+}
+
+/* ฉากหลังตอนปัดซ้าย: ไอคอนถังขยะค่อยๆ โผล่ */
+.swipeBg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--peach);
+  color: var(--ink);
+}
+
+/* แถวที่กำลังลาก: ยกขึ้นเหนือแถวอื่น */
+.dragging {
+  z-index: 2;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  box-shadow: 0 6px 20px rgba(42, 37, 80, 0.18);
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* ติ๊กเสร็จ: วงกลมเด้งเล็กน้อย (transform อย่างเดียว ปิดเองเมื่อผู้ใช้ตั้ง reduced-motion) */
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pop {
+  animation: pop 180ms ease-out;
 }

@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react'
 import Button from './Button.jsx'
+import { useRowGestures } from '../hooks/useRowGestures.js'
 import TextInput from './TextInput.jsx'
 import { addDays, isValidISODate } from '../lib/date.js'
 import { MAX_TITLE } from '../lib/tasks.js'
@@ -32,12 +33,20 @@ export default function TaskRow({
   onReorder,
   onMove,
   onRemove,
+  onDropAt,
 }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(task.title)
   const [picking, setPicking] = useState(false)
+  const [celebrate, setCelebrate] = useState(false) // เด้งเฉพาะตอนผู้ใช้เพิ่งติ๊ก ไม่เด้งตอนเปิดหน้า
   const done = task.status === 'done'
   const tomorrow = addDays(todayISO, 1)
+  const gestures = useRowGestures({
+    enabled: !editing && !expanded,
+    onSwipeDelete: onRemove,
+    onDropAt: done ? undefined : onDropAt,
+  })
+  const { mode, offset } = gestures
 
   const startEdit = () => {
     setDraft(task.title)
@@ -55,18 +64,44 @@ export default function TaskRow({
 
   return (
     <li
-      className={`${styles.item} ${isCurrent && !done ? styles.current : ''}`}
+      className={[
+        styles.item,
+        isCurrent && !done && styles.current,
+        mode === 'drag' && styles.dragging,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       aria-current={isCurrent && !done ? 'true' : undefined}
+      data-todo={done ? undefined : 'true'}
+      style={mode === 'drag' ? { transform: `translateY(${offset.y}px)` } : undefined}
     >
-      <div className={styles.row}>
+      {mode === 'swipe' && (
+        <span
+          className={styles.swipeBg}
+          style={{ opacity: gestures.swipeProgress }}
+          aria-hidden="true"
+        >
+          <Trash2 size={20} />
+        </span>
+      )}
+      <div
+        className={styles.row}
+        style={mode === 'swipe' ? { transform: `translateX(${offset.x}px)` } : undefined}
+        {...gestures.bind}
+      >
         <button
           type="button"
           className={styles.check}
           aria-pressed={done}
           aria-label={done ? `ยกเลิกเสร็จ: ${task.title}` : `ติ๊กเสร็จ: ${task.title}`}
-          onClick={onToggle}
+          onClick={() => {
+            if (!done) setCelebrate(true)
+            onToggle()
+          }}
         >
-          <span className={`${styles.box} ${done ? styles.boxDone : ''}`}>
+          <span
+            className={`${styles.box} ${done ? styles.boxDone : ''} ${done && celebrate ? styles.pop : ''}`}
+          >
             {done && <Check size={14} strokeWidth={3.5} aria-hidden="true" />}
           </span>
         </button>
@@ -107,7 +142,10 @@ export default function TaskRow({
             icon={Check}
             iconOnly
             aria-label={`เสร็จแล้ว: ${task.title}`}
-            onClick={onFinish}
+            onClick={() => {
+              setCelebrate(true)
+              onFinish()
+            }}
           />
         )}
 

@@ -10,6 +10,21 @@
   font-size: var(--text-small);
 }
 
+/* สถิติทำครบติดต่อกัน: ไอคอนไฟสีส้มจากโลโก้ ข้อความเงียบๆ */
+.streak {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.streak svg {
+  color: var(--accent-orange);
+}
+
 .jump {
   flex: none;
   width: 150px;

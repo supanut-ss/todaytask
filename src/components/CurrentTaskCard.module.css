@@ -1,11 +1,48 @@
 .card {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-3);
+}
+
+.badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-pill);
+  background: var(--card);
+  color: var(--teal);
+  animation: celebrate 240ms ease-out;
+}
+
+/* เด้งครั้งเดียวตอนการ์ดปรากฏ (transform อย่างเดียว ปิดเองเมื่อผู้ใช้ตั้ง reduced-motion) */
+@keyframes celebrate {
+  0% {
+    transform: scale(0.5) rotate(-12deg);
+  }
+  70% {
+    transform: scale(1.15) rotate(4deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
 }
 
 .doneTitle {
   font-size: var(--text-heading);
+  font-weight: 600;
+}
+
+.streak {
+  font-size: var(--text-small);
   font-weight: 600;
 }
 
