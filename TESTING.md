@@ -25,7 +25,7 @@ Performance ต่ำกว่า 90 ในโหมดจำลองสุด�
 
 ## ทดสอบบนมือถือจริง (ต้องทำเอง ผมทดสอบแทนไม่ได้)
 
-ทำหลัง deploy ที่ `https://todaytask.drivetodev.online` ติ๊กแต่ละข้อที่ผ่าน ถ้าไม่ผ่านจดอาการแล้วส่งภาพมา
+ทำหลัง deploy ที่ `https://drivetodev.online/todaytask/` ติ๊กแต่ละข้อที่ผ่าน ถ้าไม่ผ่านจดอาการแล้วส่งภาพมา
 
 ### Android (Chrome)
 

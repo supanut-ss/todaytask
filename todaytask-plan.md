@@ -382,7 +382,7 @@ todaytask/
 - [x] Lighthouse (มือถือจำลอง): Accessibility 100, Best Practices 100, SEO 100, Performance 81–85 (ไม่จำลองเน็ตช้า 99) — Performance ไม่ถึง 90 ในโหมดจำลองสุดโหด เพราะ react-dom คือ 67% ของ JS
 - [x] เตรียมการ deploy: `DEPLOY.md`, สคริปต์ตรวจหลัง deploy (`npm run verify`), header ความปลอดภัยใน `web.config`, CSP เตรียมไว้และทดสอบแล้ว (ปิดอยู่)
 - [ ] **ทดสอบบนมือถือจริง iOS Safari และ Android Chrome** ตาม `TESTING.md` (ผมทำแทนไม่ได้)
-- [ ] **Build และ deploy ขึ้น Plesk** ตาม `DEPLOY.md` แล้วรัน `npm run verify -- https://todaytask.drivetodev.online`
+- [ ] **Build และ deploy ขึ้น Plesk** ตาม `DEPLOY.md` แล้วรัน `npm run verify -- https://drivetodev.online/todaytask/`
 - [ ] ใช้งานจริง 2-3 วัน เก็บสิ่งที่ขาด
 ---
 

@@ -9,6 +9,7 @@ import {
   sampleData,
   startServer,
   DIST,
+  DIST_ROOT,
 } from './helpers.mjs'
 
 /* ทดสอบแอปที่ build แล้ว (dist) ในเบราว์เซอร์จริง
@@ -18,7 +19,7 @@ let browser
 let server
 
 beforeAll(async () => {
-  server = await startServer({ dir: DIST })
+  server = await startServer({ dir: DIST_ROOT })
   browser = await launch()
 })
 afterAll(async () => {
@@ -509,5 +510,50 @@ describe('สำรอง/กู้คืนในเบราว์เซอร
     await page.getByText('กู้คืนไม่ได้').waitFor()
     expect(await stored(page, 'tasks')).toHaveLength(8)
     await ctx.close()
+  })
+})
+
+describe('แอปอยู่ใต้ path ย่อย (/todaytask/ บนโดเมนหลัก)', () => {
+  it('build จริง: เปิด นำทาง รีเฟรชลิงก์ลึก ลงทะเบียน service worker ที่ scope ถูกต้อง และใช้ออฟไลน์ได้', async () => {
+    const sub = await startServer({ dir: DIST, mount: '/todaytask' })
+    const ctx = await newMobileContext(browser)
+    try {
+      const page = await open(ctx, `${sub.url}/todaytask/`)
+      expect(await text(page, 'h1')).toBe('วันนี้')
+
+      await page.getByRole('link', { name: 'ตั้งค่า' }).click()
+      await page.waitForURL('**/todaytask/settings')
+      expect(await text(page, 'h1')).toBe('ตั้งค่า')
+
+      await page.reload() // ลิงก์ลึก ต้องตกมาที่ index.html ของแอป ไม่ใช่ 404
+      await page.waitForLoadState('networkidle')
+      expect(await text(page, 'h1')).toBe('ตั้งค่า')
+
+      await page.getByRole('link', { name: 'กลับหน้าหลัก' }).click()
+      await page.waitForURL(`${sub.url}/todaytask/`)
+
+      const info = await page.evaluate(async () => {
+        const reg = await navigator.serviceWorker.ready
+        return {
+          scope: new URL(reg.scope).pathname,
+          manifest: new URL(document.querySelector('link[rel="manifest"]').href).pathname,
+        }
+      })
+      expect(info).toEqual({ scope: '/todaytask/', manifest: '/todaytask/manifest.webmanifest' })
+
+      await page.reload() // ให้หน้าถูกควบคุมโดย service worker
+      await page.waitForLoadState('networkidle')
+      const cdp = await ctx.newCDPSession(page)
+      const { installabilityErrors } = await cdp.send('Page.getInstallabilityErrors')
+      expect(installabilityErrors.filter((e) => e.errorId !== 'in-incognito')).toEqual([])
+
+      await ctx.setOffline(true)
+      await page.goto(`${sub.url}/todaytask/settings`)
+      expect(await text(page, 'h1')).toBe('ตั้งค่า') // ออฟไลน์ก็เปิดลิงก์ลึกได้
+      expect(page.errors).toEqual([])
+    } finally {
+      await ctx.close()
+      await sub.close()
+    }
   })
 })

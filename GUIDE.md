@@ -12,7 +12,7 @@ TodayTask is a daily planner that helps you focus on **one task at a time**. It 
 
 - No account, no server database. Everything is stored **on your device** (browser `localStorage`).
 - Thai-first interface, light/dark themes, mobile-friendly.
-- Live at: `https://todaytask.drivetodev.online`
+- Live at: `https://drivetodev.online/todaytask/`
 
 ### Main features
 
@@ -88,7 +88,7 @@ Stack: React 19, Vite, React Router, vite-plugin-pwa, Vitest, Playwright. Hostin
 
 - ไม่ต้องสมัครสมาชิก ไม่มีฐานข้อมูลบนเซิร์ฟเวอร์ ข้อมูลทั้งหมดเก็บ **ในเครื่องของคุณ** (`localStorage` ของเบราว์เซอร์)
 - หน้าจอภาษาไทย มีโหมดสว่าง/มืด ใช้สะดวกบนมือถือ
-- เปิดใช้ที่: `https://todaytask.drivetodev.online`
+- เปิดใช้ที่: `https://drivetodev.online/todaytask/`
 
 ### ฟีเจอร์หลัก
 

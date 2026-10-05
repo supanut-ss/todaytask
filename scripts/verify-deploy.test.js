@@ -2,7 +2,7 @@ import { cpSync, mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { DIST, startServer } from '../e2e/helpers.mjs'
+import { DIST, DIST_ROOT, startServer } from '../e2e/helpers.mjs'
 import { summarize, verifyDeploy } from './verify-deploy.mjs'
 
 /* ทดสอบสคริปต์ตรวจ deploy กับเซิร์ฟเวอร์จำลอง: ตั้งค่าถูก = ผ่านหมด, ตั้งค่าผิดทีละแบบ = จับได้ตรงข้อ */
@@ -11,7 +11,7 @@ let server
 afterEach(async () => server?.close())
 
 const run = async (options) => {
-  server = await startServer({ dir: DIST, ...options })
+  server = await startServer({ dir: DIST_ROOT, ...options })
   const results = await verifyDeploy(server.url, { allowHttp: true })
   return {
     results,
@@ -19,6 +19,28 @@ const run = async (options) => {
     failed: results.filter((r) => r.status === 'ไม่ผ่าน').map((r) => r.name),
   }
 }
+
+describe('verify-deploy ใต้ path ย่อย (build จริง /todaytask/)', () => {
+  it('เสิร์ฟ dist ที่ /todaytask: ผ่านหมด ไม่มีข้อที่ไม่ผ่าน', async () => {
+    server = await startServer({ dir: DIST, mount: '/todaytask' })
+    const results = await verifyDeploy(server.url + '/todaytask/', { allowHttp: true })
+    const failed = results.filter((r) => r.status === 'ไม่ผ่าน').map((r) => r.name)
+    expect(failed).toEqual([])
+    expect(summarize(results).pass).toBeGreaterThan(25)
+  })
+
+  it('ใส่ URL ไม่มี / ท้าย: ยังตรวจได้เหมือนกัน', async () => {
+    server = await startServer({ dir: DIST, mount: '/todaytask' })
+    const results = await verifyDeploy(server.url + '/todaytask', { allowHttp: true })
+    expect(results.filter((r) => r.status === 'ไม่ผ่าน')).toEqual([])
+  })
+
+  it('อัปโหลดผิดที่ (build จริงอยู่ที่ root): จับได้ว่าไฟล์ใน /todaytask/assets ไม่มี', async () => {
+    server = await startServer({ dir: DIST })
+    const results = await verifyDeploy(server.url + '/todaytask/', { allowHttp: true })
+    expect(results.some((r) => r.status === 'ไม่ผ่าน')).toBe(true)
+  })
+})
 
 describe('verify-deploy', () => {
   it('ตั้งค่าถูกต้อง: ไม่มีข้อที่ไม่ผ่าน', async () => {
@@ -61,14 +83,14 @@ describe('verify-deploy', () => {
   })
 
   it('ใช้ http โดยไม่อนุญาต: ไม่ผ่านข้อ HTTPS', async () => {
-    server = await startServer({ dir: DIST })
+    server = await startServer({ dir: DIST_ROOT })
     const results = await verifyDeploy(server.url, { allowHttp: false })
     expect(results.find((r) => r.name === 'ใช้ HTTPS').status).toBe('ไม่ผ่าน')
   })
 
   it('อัปโหลดผิด (เอาทั้งโฟลเดอร์ dist ไปวางข้างใน): หน้าแรกไม่ใช่แอป จับได้', async () => {
     const wrong = mkdtempSync(join(tmpdir(), 'wrong-upload-'))
-    cpSync(DIST, join(wrong, 'dist'), { recursive: true }) // ควรอัปโหลด "เนื้อหาใน" dist ไม่ใช่ตัวโฟลเดอร์
+    cpSync(DIST_ROOT, join(wrong, 'dist'), { recursive: true }) // ควรอัปโหลด "เนื้อหาใน" dist ไม่ใช่ตัวโฟลเดอร์
     const r = await run({ dir: wrong })
     expect(r.failed).toEqual(
       expect.arrayContaining([

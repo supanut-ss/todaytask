@@ -6,7 +6,7 @@ import prettier from 'eslint-config-prettier'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'dev-dist']),
+  globalIgnores(['dist', 'dist-root', 'dev-dist']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [

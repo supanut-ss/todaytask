@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* ตรวจเซิร์ฟเวอร์หลัง deploy: ทำให้อัตโนมัติในสิ่งที่ต้องไล่เช็กเองใน DevTools
-   ใช้:  node scripts/verify-deploy.mjs https://todaytask.drivetodev.online
+   ใช้:  node scripts/verify-deploy.mjs https://drivetodev.online/todaytask/
          node scripts/verify-deploy.mjs http://127.0.0.1:4173 --allow-http   (ทดสอบในเครื่อง)
    ออกด้วยรหัส 1 ถ้ามีข้อที่ "ไม่ผ่าน" (ข้อ "เตือน" ไม่ทำให้ล้ม) */
 
@@ -14,6 +14,7 @@ const maxAge = (value = '') => Number(/max-age=(\d+)/i.exec(value)?.[1] ?? 0)
 /** รันทุกการตรวจ คืนรายการ { status, name, detail } */
 export async function verifyDeploy(baseUrl, { allowHttp = false } = {}) {
   const base = new URL(baseUrl)
+  if (!base.pathname.endsWith('/')) base.pathname += '/' // แอปอยู่ใต้ path ย่อยได้ เช่น https://โดเมน/todaytask/
   const results = []
   const add = (status, name, detail = '') => results.push({ status, name, detail })
   const check = (cond, name, detail, level = FAIL) =>
@@ -53,7 +54,7 @@ export async function verifyDeploy(baseUrl, { allowHttp = false } = {}) {
   }
 
   // 3) หน้าแรก
-  const home = await get('/')
+  const home = await get('./')
   const homeBody = await home.text()
   check(home.status === 200, 'หน้าแรกตอบ 200', `ตอบ ${home.status}`)
   check(
@@ -69,7 +70,7 @@ export async function verifyDeploy(baseUrl, { allowHttp = false } = {}) {
 
   // 4) ลิงก์ลึก (SPA fallback)
   for (const path of ['/settings', '/parking', '/day/2026-10-05']) {
-    const res = await get(path)
+    const res = await get(path.slice(1))
     const ctype = res.headers.get('content-type') ?? ''
     check(
       res.status === 200 && ctype.includes('text/html'),
@@ -79,7 +80,7 @@ export async function verifyDeploy(baseUrl, { allowHttp = false } = {}) {
   }
 
   // 5) ไฟล์ที่ไม่มีต้อง 404 (ไม่ตอบ HTML ปนให้ JS/CSS)
-  const missing = await get('/assets/ไม่มีไฟล์นี้.js')
+  const missing = await get('assets/ไม่มีไฟล์นี้.js')
   check(
     missing.status === 404,
     'ไฟล์ที่ไม่มีอยู่ตอบ 404',
@@ -87,7 +88,7 @@ export async function verifyDeploy(baseUrl, { allowHttp = false } = {}) {
   )
 
   // 6) manifest
-  const mres = await get('/manifest.webmanifest')
+  const mres = await get('manifest.webmanifest')
   check(mres.status === 200, 'manifest.webmanifest ตอบ 200', `ตอบ ${mres.status}`)
   check(
     (mres.headers.get('content-type') ?? '').includes('application/manifest+json'),
@@ -109,7 +110,7 @@ export async function verifyDeploy(baseUrl, { allowHttp = false } = {}) {
   check(
     manifest?.name === 'ทำวันนี้' &&
       manifest?.display === 'standalone' &&
-      manifest?.start_url === '/',
+      manifest?.start_url === base.pathname,
     'manifest มีค่าครบ',
     'อ่าน manifest ไม่ได้หรือค่าไม่ครบ',
   )
@@ -123,7 +124,7 @@ export async function verifyDeploy(baseUrl, { allowHttp = false } = {}) {
   }
 
   // 7) service worker
-  const sw = await get('/sw.js')
+  const sw = await get('sw.js')
   const swBody = await sw.text()
   check(
     sw.status === 200 && (sw.headers.get('content-type') ?? '').includes('javascript'),
@@ -142,7 +143,9 @@ export async function verifyDeploy(baseUrl, { allowHttp = false } = {}) {
   )
 
   // 8) ไฟล์ใน assets (แคชยาว) และฟอนต์
-  const assets = [...homeBody.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1])
+  const assets = [...homeBody.matchAll(/(?:src|href)="([^"]+)"/g)]
+    .map((m) => m[1])
+    .filter((p) => p.startsWith(`${base.pathname}assets/`))
   check(
     assets.length >= 3,
     'index.html อ้างถึงไฟล์ JS/CSS/ฟอนต์ใน /assets',
@@ -202,7 +205,7 @@ export async function verifyDeploy(baseUrl, { allowHttp = false } = {}) {
   )
 
   // 10) web.config ต้องไม่ถูกเสิร์ฟออกไป
-  const cfg = await get('/web.config')
+  const cfg = await get('web.config')
   const cfgBody = cfg.status === 200 ? await cfg.text() : ''
   check(
     !(cfg.status === 200 && cfgBody.includes('<configuration')),

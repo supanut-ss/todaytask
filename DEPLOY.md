@@ -1,6 +1,21 @@
 # คู่มือ deploy: ทำวันนี้ → Plesk (Windows / IIS)
 
-เป้าหมาย: เปิดแอปที่ `https://todaytask.drivetodev.online`
+> **อัปเดต: แอปถูกตั้งค่าให้อยู่ใต้ path `/todaytask/` ของโดเมนหลัก** (`https://drivetodev.online/todaytask/`) ไม่ใช่ subdomain แล้ว ขั้นตอน 1 (สร้าง subdomain) จึงไม่ต้องทำ ดู "ย้ายมาอยู่ใต้ /todaytask" ด้านล่าง ส่วนที่เหลือใช้ได้เหมือนเดิม (แค่ URL เปลี่ยน)
+
+## ย้ายมาอยู่ใต้ /todaytask
+
+1. `npm run build` ได้ `dist/` ที่ชี้ path `/todaytask/` ไว้หมดแล้ว (ไฟล์ JS/CSS/ไอคอน/manifest/service worker)
+2. อัปโหลด **เนื้อหาใน `dist/`** ไปที่โฟลเดอร์ `todaytask` ใน document root ของโดเมนหลัก (ต้องเห็น `.../todaytask/index.html` ไม่ใช่ `.../index.html` และไม่ใช่ `.../todaytask/dist/index.html`) ไฟล์ `web.config` ต้องอยู่ในโฟลเดอร์ `todaytask` นี้ด้วย
+3. ตรวจ: `node scripts/verify-deploy.mjs https://drivetodev.online/todaytask/`
+4. ข้อควรระวัง
+   - `web.config` ของแอปอ้าง `/todaytask/index.html` ถ้าเปลี่ยนชื่อโฟลเดอร์ ต้องแก้บรรทัดนั้นและ `PRODUCTION_BASE` ใน `vite.config.js` ให้ตรงกัน แล้ว build ใหม่
+   - `web.config` ของเว็บหลัก (ถ้ามี) อาจมีกฎ rewrite/CSP ที่ชนกับแอปนี้ ถ้าลิงก์ลึก (เช่น `/todaytask/settings`) เปิดไม่ได้ ให้ตรวจกฎของเว็บหลักก่อน
+   - ทุกแอปบนโดเมนเดียวกันใช้ localStorage ร่วมกัน คีย์ของแอปนี้ขึ้นต้น `tw:v1:` จึงไม่ชนกัน
+   - ข้อมูลของผู้ใช้เดิมที่อยู่บน subdomain `todaytask.drivetodev.online` จะไม่ตามมา (คนละ origin) ให้ใช้ "สำรองข้อมูล" ที่ตั้งค่า แล้ว "กู้คืนข้อมูล" บนที่อยู่ใหม่
+   - ผู้ใช้ที่ติดตั้งแอปจาก subdomain เดิมต้องติดตั้งใหม่ (manifest id/scope เปลี่ยน) ถ้าจะเลิกใช้ subdomain ให้ตั้ง redirect มาที่ path ใหม่
+   - ถ้าต้องการกลับไปอยู่ root ของโดเมน/subdomain: เปลี่ยน `PRODUCTION_BASE` เป็น `'/'` และแก้ `url` ใน `web.config` เป็น `/index.html`
+
+เป้าหมาย: เปิดแอปที่ `https://drivetodev.online/todaytask/` (ขั้นตอนด้านล่างเขียนไว้ตอนใช้ subdomain `todaytask.drivetodev.online` ถ้าใช้ path ย่อยให้ดูหัวข้อ "ย้ายมาอยู่ใต้ /todaytask" ด้านบนเป็นหลัก)
 
 > ทุกขั้นตอนทำในหน้าเว็บ Plesk ของคุณเอง ไม่ต้องใช้ Node.js บนเซิร์ฟเวอร์ (แอปเป็นไฟล์ static)
 
@@ -39,7 +54,7 @@
 บนเครื่องที่มี Node.js (เครื่องคุณหรือเครื่องไหนก็ได้ ไม่ต้องมีโปรเจกต์ทั้งก้อน ใช้แค่ไฟล์ `scripts/verify-deploy.mjs`):
 
 ```bash
-node scripts/verify-deploy.mjs https://todaytask.drivetodev.online
+node scripts/verify-deploy.mjs https://drivetodev.online/todaytask/
 ```
 
 สคริปต์ตรวจ ~30 ข้อ เช่น HTTPS, ลิงก์ลึกเปิดได้ไหม, `sw.js` ถูกห้ามแคชไหม, manifest ชนิดไฟล์ถูกไหม, ไอคอนโหลดได้ไหม, `web.config` ไม่รั่วออกไป

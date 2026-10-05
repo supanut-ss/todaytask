@@ -6,9 +6,13 @@ import NotFoundPage from './pages/NotFoundPage.jsx'
 import ParkingPage from './pages/ParkingPage.jsx'
 import SettingsPage from './pages/SettingsPage.jsx'
 
+// แอปอยู่ใต้ path ย่อยของโดเมน (เช่น /todaytask/) ตาม base ของ Vite ตอนเทสต์/dev เป็น '/'
+// ใส่ / ท้ายไว้ ให้หน้าแรกเป็น /todaytask/ เสมอ (ไม่ใช่ /todaytask) เพราะ service worker คุมเฉพาะใน scope /todaytask/
+const basename = import.meta.env.BASE_URL
+
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <SnackbarProvider>
         <Routes>
           <Route element={<AppShell />}>

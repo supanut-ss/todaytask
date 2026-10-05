@@ -28,7 +28,8 @@ const NO_CACHE = new Set(['/sw.js', '/index.html', '/manifest.webmanifest'])
    swCache        ค่า Cache-Control ของ sw.js (ค่าเริ่มต้น no-cache)
    manifestType   Content-Type ของ manifest
    exposeConfig   true = เสิร์ฟ web.config ออกไปตรงๆ (IIS จริงบล็อกไว้)
-   securityHeaders false = ไม่ใส่ header ความปลอดภัยพื้นฐาน */
+   securityHeaders false = ไม่ใส่ header ความปลอดภัยพื้นฐาน
+   mount          เสิร์ฟแอปใต้ path ย่อย เช่น '/todaytask' (นอก path นี้ 404, /todaytask ไม่มี / ท้าย -> redirect เหมือน IIS) */
 export async function startServer({
   dir,
   port = 0,
@@ -38,14 +39,26 @@ export async function startServer({
   manifestType = 'application/manifest+json',
   exposeConfig = false,
   securityHeaders = true,
+  mount = '',
 }) {
   let root = resolve(dir)
   const log = []
 
   const server = createServer(async (req, res) => {
     const url = new URL(req.url, 'http://localhost')
-    const path = decodeURIComponent(url.pathname)
+    let path = decodeURIComponent(url.pathname)
     log.push(path)
+    if (mount) {
+      if (path === mount) {
+        res.writeHead(301, { Location: mount + '/' }).end()
+        return
+      }
+      if (!path.startsWith(mount + '/')) {
+        res.writeHead(404).end('not found')
+        return
+      }
+      path = path.slice(mount.length)
+    }
 
     if (path === '/web.config' && !exposeConfig) {
       res.writeHead(404).end('not found') // IIS ไม่เสิร์ฟ web.config ให้ใคร

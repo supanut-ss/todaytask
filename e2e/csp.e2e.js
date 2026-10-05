@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { DIST, launch, newMobileContext, startServer, sampleData } from './helpers.mjs'
+import { DIST_ROOT, launch, newMobileContext, startServer, sampleData } from './helpers.mjs'
 
 /* ตรวจว่า Content-Security-Policy ที่เตรียมไว้ในคอมเมนต์ของ web.config "ใช้ได้จริง":
    เปิดแอปด้วย CSP นี้แล้วฟีเจอร์ทุกอย่างยังทำงาน และไม่มีการถูกบล็อก
@@ -16,7 +16,7 @@ beforeAll(async () => {
 afterAll(() => browser?.close())
 
 async function openWithCsp(csp, { settings } = {}) {
-  const server = await startServer({ dir: DIST, headers: { 'Content-Security-Policy': csp } })
+  const server = await startServer({ dir: DIST_ROOT, headers: { 'Content-Security-Policy': csp } })
   const ctx = await newMobileContext(browser, {
     seed: sampleData('2026-10-04'),
     settings,

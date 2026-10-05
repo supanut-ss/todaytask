@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { manifest } from '../pwa-manifest.js'
+import { makeManifest, manifest } from '../pwa-manifest.js'
 
 const root = resolve(import.meta.dirname, '..')
 const publicFile = (p) => resolve(root, 'public', p.replace(/^\//, ''))
@@ -69,7 +69,7 @@ describe('web.config (IIS)', () => {
 
   it('ตอบ manifest เป็นชนิดที่ถูก และมีกฎให้ทุกเส้นทางตกมาที่ index.html', () => {
     expect(config).toContain('fileExtension=".webmanifest" mimeType="application/manifest+json"')
-    expect(config).toContain('url="/index.html"')
+    expect(config).toContain('url="/todaytask/index.html"')
   })
 
   it('ห้ามแคช sw.js, index.html และ manifest (ไม่งั้นอัปเดตเวอร์ชันไม่ขึ้น)', () => {
@@ -80,5 +80,25 @@ describe('web.config (IIS)', () => {
       expect(block, file).not.toBeNull()
       expect(block[0]).toContain('cacheControlMode="DisableCache"')
     }
+  })
+})
+
+describe('manifest เมื่อแอปอยู่ใต้ path ย่อย (/todaytask/)', () => {
+  const sub = makeManifest('/todaytask/')
+
+  it('id / start_url / scope ชี้ที่ path ย่อย', () => {
+    expect(sub).toMatchObject({ id: '/todaytask/', start_url: '/todaytask/', scope: '/todaytask/' })
+  })
+
+  it('ไอคอนขึ้นต้นด้วย path ย่อย และตรงกับไฟล์ใน public/icons', () => {
+    for (const icon of sub.icons) {
+      expect(icon.src.startsWith('/todaytask/icons/'), icon.src).toBe(true)
+      expect(existsSync(publicFile(icon.src.replace('/todaytask/', ''))), icon.src).toBe(true)
+    }
+  })
+
+  it('ค่าเริ่มต้น (root) ไม่เปลี่ยน', () => {
+    expect(manifest.start_url).toBe('/')
+    expect(manifest.icons[0].src).toBe('/icons/icon-192.png')
   })
 })

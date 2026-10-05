@@ -5,7 +5,8 @@ import { chromium } from 'playwright-core'
 import { startServer } from './server.mjs'
 
 export const ROOT = resolve(import.meta.dirname, '..')
-export const DIST = join(ROOT, 'dist')
+export const DIST = join(ROOT, 'dist') // build จริง (อยู่ใต้ /todaytask/)
+export const DIST_ROOT = join(ROOT, 'dist-root') // build โหมด root: เสิร์ฟที่ / ใช้กับเทสต์เดิมทั้งหมด
 export const AXE = join(ROOT, 'node_modules/axe-core/axe.min.js')
 
 export async function launch() {
@@ -97,13 +98,13 @@ export function makeTwoVersions() {
   const base = mkdtempSync(join(tmpdir(), 'todaytask-'))
   const v1 = join(base, 'v1')
   const v2 = join(base, 'v2')
-  cpSync(DIST, v1, { recursive: true })
-  cpSync(DIST, v2, { recursive: true })
+  cpSync(DIST_ROOT, v1, { recursive: true })
+  cpSync(DIST_ROOT, v2, { recursive: true })
   appendFileSync(join(v2, 'sw.js'), '\n// เวอร์ชัน 2\n')
   return { v1, v2 }
 }
 
-export const readDist = (name) => readFileSync(join(DIST, name), 'utf8')
+export const readDist = (name) => readFileSync(join(DIST_ROOT, name), 'utf8')
 
 export async function runAxe(page) {
   await page.addScriptTag({ path: AXE })

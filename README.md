@@ -1,7 +1,7 @@
 # ทำวันนี้ (todaytask)
 
 เว็บแอปวางแผนงานรายวัน (PWA) — React + Vite, JavaScript, ไม่มีฐานข้อมูล (เก็บข้อมูลใน localStorage)
-Subdomain: `todaytask.drivetodev.online` · Hosting: Plesk บน Windows (IIS)
+ที่อยู่: `https://drivetodev.online/todaytask/` (ใต้ path ของโดเมนหลัก) · Hosting: Plesk บน Windows (IIS)
 
 แผนงานเต็มดูที่ `todaytask-plan.md`
 
@@ -10,7 +10,8 @@ Subdomain: `todaytask.drivetodev.online` · Hosting: Plesk บน Windows (IIS)
 ```bash
 npm install        # ติดตั้งแพ็กเกจ (ครั้งแรก)
 npm run dev        # รันตอนพัฒนา เปิด http://localhost:5173
-npm run build      # สร้างไฟล์สำหรับเปิดใช้งานในโฟลเดอร์ dist/
+npm run build      # สร้างไฟล์สำหรับเปิดใช้งานในโฟลเดอร์ dist/ (อยู่ใต้ path /todaytask/)
+npm run build:root # build อีกแบบที่อยู่ root (dist-root/) ใช้กับเทสต์ e2e เท่านั้น
 npm run preview    # ลองเปิดไฟล์ที่ build แล้ว
 npm run lint       # ตรวจโค้ด
 npm test           # รันเทสต์หน่วย/หน้าจอ (jsdom)
