@@ -18,7 +18,7 @@
   place-items: center;
   width: var(--tap);
   height: var(--tap);
-  margin-left: -10px;
+  margin-left: 0;
   padding: 0;
   border: 0;
   background: none;
@@ -66,7 +66,7 @@
   place-items: center;
   width: var(--tap);
   height: var(--tap);
-  margin-right: -10px;
+  margin-right: 0;
   padding: 0;
   border: 0;
   border-radius: var(--radius-sm);
@@ -123,7 +123,8 @@
 
 /* งานที่ทำอยู่ตอนนี้: เป็นแถวในรายการ ไฮไลต์เบาๆ ด้วยพื้นม่วงอ่อน + แถบสีแบรนด์ด้านซ้าย */
 .current {
-  padding: var(--space-1) 0;
+  padding: var(--space-1) var(--space-2);
+  margin: 0 calc(var(--space-2) * -1);
   border-radius: var(--radius-sm);
   background: var(--blue);
 }
