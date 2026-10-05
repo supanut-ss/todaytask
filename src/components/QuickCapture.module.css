@@ -26,3 +26,10 @@
   min-height: 48px;
   border-radius: var(--radius);
 }
+
+@media (min-width: 768px) {
+  .form {
+    padding-left: calc(var(--space-5) + var(--safe-left));
+    padding-right: calc(var(--space-5) + var(--safe-right));
+  }
+}

@@ -84,3 +84,55 @@
   font-size: var(--text-small);
   font-weight: 600;
 }
+
+/* มือถือ/แท็บเล็ต: คอลัมน์เดียวเรียงต่อกัน */
+.layout,
+.side,
+.primary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* จอกว้าง: ซ้าย = ภาพรวมวัน (วัน/ความคืบหน้า/ทำอยู่ตอนนี้) ขวา = รายการงาน */
+@media (min-width: 1100px) {
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: start;
+    gap: var(--space-6);
+  }
+
+  .side {
+    position: sticky;
+    top: 0;
+    gap: var(--space-5);
+  }
+
+  .primary {
+    gap: var(--space-5);
+  }
+}
+
+.parkingSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.parkingAll {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.parkingList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

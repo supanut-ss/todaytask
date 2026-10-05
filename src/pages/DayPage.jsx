@@ -7,12 +7,13 @@ import Card from '../components/Card.jsx'
 import CurrentTaskCard from '../components/CurrentTaskCard.jsx'
 import DayStrip from '../components/DayStrip.jsx'
 import EmptyState from '../components/EmptyState.jsx'
+import ParkingNote from '../components/ParkingNote.jsx'
 import OverdueGroup from '../components/OverdueGroup.jsx'
 import TaskList from '../components/TaskList.jsx'
 import TextInput from '../components/TextInput.jsx'
 import { useCurrentTask } from '../hooks/useCurrentTask.js'
 import { usePageTitle } from '../hooks/usePageTitle.js'
-import { useParking } from '../hooks/useParking.js'
+import { useParkingActions } from '../hooks/useParkingActions.js'
 import { useSnackbar } from '../hooks/useSnackbar.js'
 import { useTasks } from '../hooks/useTasks.js'
 import { useToday } from '../hooks/useToday.js'
@@ -23,6 +24,9 @@ import styles from './DayPage.module.css'
 /** หน้า Main: แผนของวันที่เลือก (ค่าเริ่มต้น = วันนี้)
  *  เฟส 2: แถบเลือกวัน + เพิ่ม/ติ๊ก/แก้/ลบ/จัดลำดับ/ย้ายวัน
  *  เฟส 3: (เฉพาะหน้าวันนี้) กลุ่มงานค้าง + การ์ด "ทำอยู่ตอนนี้" */
+/** จำนวนโน้ตที่แสดงในหน้าแรก (เกินนี้ไปดูทั้งหมดที่หน้าที่พักความคิด) */
+const PARKING_PREVIEW = 3
+
 export default function DayPage() {
   const { date } = useParams()
   const navigate = useNavigate()
@@ -32,8 +36,8 @@ export default function DayPage() {
 
   const { tasks, add, toggle, rename, remove, move, reorder, restore } = useTasks()
   const { show } = useSnackbar()
+  const { notes, schedule: scheduleNote, discard: discardNote } = useParkingActions(todayISO)
   const { preferred, choose } = useCurrentTask()
-  const { notes } = useParking()
   const [addingFor, setAddingFor] = useState(null) // วันที่ที่กำลังเปิดช่องเพิ่มงาน
 
   const dayTasks = useMemo(() => (valid ? tasksOnDate(tasks, iso) : []), [tasks, iso, valid])
@@ -95,93 +99,119 @@ export default function DayPage() {
 
   return (
     <>
-      <div className={styles.head}>
-        <div>
-          <h1>{label}</h1>
-          <p className={styles.sub}>{formatThai(iso, { withYear: true })}</p>
-        </div>
-        <TextInput
-          className={styles.jump}
-          type="date"
-          label="ไปที่วันที่"
-          hideLabel
-          value={iso}
-          onChange={jump}
-        />
-      </div>
-
-      <div className={styles.progress}>
-        <p className={styles.counter}>
-          {total > 0 ? `เสร็จ ${done} จาก ${total}` : 'ยังไม่มีงานในวันนี้'}
-        </p>
-        <div
-          className={styles.bar}
-          role="progressbar"
-          aria-label="ความคืบหน้าของวัน"
-          aria-valuemin={0}
-          aria-valuemax={total}
-          aria-valuenow={done}
-        >
-          <div className={styles.fill} style={{ width: total ? `${(done / total) * 100}%` : 0 }} />
-        </div>
-      </div>
-
-      <DayStrip selected={iso} today={todayISO} counts={counts} pathFor={pathFor} />
-
-      {isToday && <OverdueGroup tasks={overdue} todayISO={todayISO} actions={actions} />}
-
-      {isToday && (
-        <CurrentTaskCard
-          task={current}
-          allDone={total > 0 && done === total}
-          overdueCount={overdue.length}
-          onFinish={actions.finish}
-        />
-      )}
-
-      <section className={styles.section} aria-label={`งานของ${label}`}>
-        <h2>งานของ{label}</h2>
-        <Card flush>
-          {total > 0 ? (
-            <TaskList
-              tasks={dayTasks}
-              todayISO={todayISO}
-              currentId={current?.id ?? null}
-              actions={actions}
+      <div className={styles.layout}>
+        <div className={styles.side}>
+          <div className={styles.head}>
+            <div>
+              <h1>{label}</h1>
+              <p className={styles.sub}>{formatThai(iso, { withYear: true })}</p>
+            </div>
+            <TextInput
+              className={styles.jump}
+              type="date"
+              label="ไปที่วันที่"
+              hideLabel
+              value={iso}
+              onChange={jump}
             />
-          ) : (
-            <EmptyState
-              icon={CalendarDays}
-              title={canAdd ? `ยังไม่มีงานของ${label}` : 'วันนั้นไม่มีงาน'}
-              description={canAdd ? 'เริ่มวางแผนด้วยการเพิ่มงานแรก' : undefined}
-              action={
-                canAdd && !adding ? (
-                  <Button onClick={() => setAddingFor(iso)}>เพิ่มงานแรก</Button>
-                ) : undefined
-              }
-            />
-          )}
-          {canAdd && (total > 0 || adding) && (
-            <div className={`${styles.addRow} ${total > 0 ? styles.addRowBorder : ''}`}>
-              <AddTask
-                label={iso === todayISO ? 'เพิ่มงานวันนี้' : `เพิ่มงานให้${label}`}
-                placeholder="จะทำอะไร?"
-                open={adding}
-                onOpenChange={(open) => setAddingFor(open ? iso : null)}
-                onAdd={(title) => add(title, iso)}
+          </div>
+
+          <div className={styles.progress}>
+            <p className={styles.counter}>
+              {total > 0 ? `เสร็จ ${done} จาก ${total}` : 'ยังไม่มีงานในวันนี้'}
+            </p>
+            <div
+              className={styles.bar}
+              role="progressbar"
+              aria-label="ความคืบหน้าของวัน"
+              aria-valuemin={0}
+              aria-valuemax={total}
+              aria-valuenow={done}
+            >
+              <div
+                className={styles.fill}
+                style={{ width: total ? `${(done / total) * 100}%` : 0 }}
               />
             </div>
-          )}
-        </Card>
-      </section>
+          </div>
 
-      <Link to="/parking" className={styles.parking}>
-        <span className={styles.parkingLabel}>
-          ที่พักความคิด
-          {notes.length > 0 && <span className={styles.parkingCount}>{notes.length}</span>}
-        </span>
-        <ChevronRight size={20} aria-hidden="true" />
-      </Link>
+          <DayStrip selected={iso} today={todayISO} counts={counts} pathFor={pathFor} />
+
+          {isToday && (
+            <CurrentTaskCard
+              task={current}
+              allDone={total > 0 && done === total}
+              overdueCount={overdue.length}
+              onFinish={actions.finish}
+            />
+          )}
+        </div>
+        <div className={styles.primary}>
+          {isToday && <OverdueGroup tasks={overdue} todayISO={todayISO} actions={actions} />}
+
+          <section className={styles.section} aria-label={`งานของ${label}`}>
+            <h2>งานของ{label}</h2>
+            <Card flush>
+              {total > 0 ? (
+                <TaskList
+                  tasks={dayTasks}
+                  todayISO={todayISO}
+                  currentId={current?.id ?? null}
+                  actions={actions}
+                />
+              ) : (
+                <EmptyState
+                  icon={CalendarDays}
+                  title={canAdd ? `ยังไม่มีงานของ${label}` : 'วันนั้นไม่มีงาน'}
+                  description={canAdd ? 'เริ่มวางแผนด้วยการเพิ่มงานแรก' : undefined}
+                  action={
+                    canAdd && !adding ? (
+                      <Button onClick={() => setAddingFor(iso)}>เพิ่มงานแรก</Button>
+                    ) : undefined
+                  }
+                />
+              )}
+              {canAdd && (total > 0 || adding) && (
+                <div className={`${styles.addRow} ${total > 0 ? styles.addRowBorder : ''}`}>
+                  <AddTask
+                    label={iso === todayISO ? 'เพิ่มงานวันนี้' : `เพิ่มงานให้${label}`}
+                    placeholder="จะทำอะไร?"
+                    open={adding}
+                    onOpenChange={(open) => setAddingFor(open ? iso : null)}
+                    onAdd={(title) => add(title, iso)}
+                  />
+                </div>
+              )}
+            </Card>
+          </section>
+          <section className={styles.parkingSection} aria-label="ที่พักความคิด">
+            <Link to="/parking" className={styles.parking}>
+              <span className={styles.parkingLabel}>
+                ที่พักความคิด
+                {notes.length > 0 && <span className={styles.parkingCount}>{notes.length}</span>}
+              </span>
+              <span className={styles.parkingAll}>
+                {notes.length > PARKING_PREVIEW ? 'ดูทั้งหมด' : null}
+                <ChevronRight size={20} aria-hidden="true" />
+              </span>
+            </Link>
+            {notes.length > 0 && (
+              <ul className={styles.parkingList}>
+                {notes.slice(0, PARKING_PREVIEW).map((note) => (
+                  <li key={note.id}>
+                    <ParkingNote
+                      note={note}
+                      todayISO={todayISO}
+                      onSchedule={scheduleNote}
+                      onRemove={discardNote}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+      </div>
     </>
   )
 }

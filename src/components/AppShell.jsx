@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { Link, Outlet } from 'react-router-dom'
-import { SlidersHorizontal } from 'lucide-react'
+import { Link, Outlet, useLocation } from 'react-router-dom'
+import { ArrowLeft, SlidersHorizontal } from 'lucide-react'
 import logoMark from '../assets/logo-mark.png'
 import { useApplyTheme } from '../hooks/useApplyTheme.js'
 import { useTasks } from '../hooks/useTasks.js'
@@ -17,6 +17,9 @@ export default function AppShell() {
   // ล้างงานที่เสร็จเกิน 30 วัน: ตอนเปิดแอป และทุกครั้งที่ขึ้นวันใหม่
   const { prune } = useTasks()
   const todayISO = useToday()
+  // หน้าอื่นนอกจากหน้าวันมีปุ่มกลับหน้าหลัก
+  const { pathname } = useLocation()
+  const isDayPage = pathname === '/' || pathname.startsWith('/day/')
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(prune, [todayISO])
 
@@ -36,6 +39,12 @@ export default function AppShell() {
 
       <div className={styles.scroll}>
         <main className={`${styles.column} ${styles.content}`}>
+          {!isDayPage && (
+            <Link to="/" className={styles.back}>
+              <ArrowLeft size={20} strokeWidth={2} aria-hidden="true" />
+              กลับหน้าหลัก
+            </Link>
+          )}
           <PwaBanners />
           <StorageNotice />
           <Outlet />
