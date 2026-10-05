@@ -1,0 +1,127 @@
+.item {
+  border-bottom: 1px solid var(--border);
+}
+
+.item:last-child {
+  border-bottom: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+}
+
+.check {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  margin-left: -10px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.box {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  color: var(--ink);
+}
+
+.boxDone {
+  border-color: var(--mint);
+  background: var(--mint);
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2) 0;
+  overflow-wrap: anywhere;
+}
+
+/* งานที่เสร็จ: ตัวอักษรจางลง และขีดด้วยปากกาไฮไลต์ */
+.titleDone {
+  color: var(--done-text);
+}
+
+.titleDone span {
+  background-image: linear-gradient(
+    transparent 38%,
+    var(--marker) 38%,
+    var(--marker) 64%,
+    transparent 64%
+  );
+}
+
+.more {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  margin-right: -10px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--muted);
+}
+
+.more[aria-expanded='true'] {
+  background: var(--blue);
+  color: var(--ink);
+}
+
+.edit {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) 0;
+}
+
+.edit > :first-child {
+  flex: 1;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.moveLabel {
+  font-size: var(--text-small);
+  font-weight: 500;
+}
+
+/* ป้ายบอกว่างานนี้คือ "ทำอยู่ตอนนี้" */
+.badge {
+  flex: none;
+  margin-left: var(--space-2);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--blue);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}

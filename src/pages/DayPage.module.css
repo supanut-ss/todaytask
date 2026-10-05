@@ -1,0 +1,86 @@
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.sub {
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+
+.jump {
+  flex: none;
+  width: 150px;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.counter {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--progress);
+  transition: width 200ms ease-out;
+}
+
+.section h2 {
+  margin-bottom: var(--space-2);
+}
+
+.addRow {
+  padding: 0 var(--space-3);
+}
+
+.addRowBorder {
+  border-top: 1px solid var(--border);
+}
+
+/* ทางเข้าหน้าที่พักความคิด */
+.parking {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.parkingLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.parkingCount {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 var(--space-2);
+  border-radius: 12px;
+  background: var(--peach);
+  font-size: 13px;
+  font-weight: 600;
+}

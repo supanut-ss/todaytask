@@ -1,0 +1,26 @@
+.card {
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  color: var(--ink);
+}
+
+.white {
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.blue {
+  background: var(--blue);
+}
+
+.mint {
+  background: var(--mint);
+}
+
+.peach {
+  background: var(--peach);
+}
+
+.flush {
+  padding: 0;
+}

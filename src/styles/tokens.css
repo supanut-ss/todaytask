@@ -1,0 +1,101 @@
+/* ทำวันนี้ — design tokens
+   สีพาสเทลใช้เป็นพื้นหลังเท่านั้น ตัวอักษรบนพื้นพาสเทลใช้ --ink เสมอ
+   ธีม/สีไฮไลต์ถูกกำหนดผ่านแอตทริบิวต์บน <html> (ตั้งโดย lib/theme.js และสคริปต์ใน index.html):
+     data-theme="dark"            โหมดมืด (ไม่มี = สว่าง)  ← "อัตโนมัติ" ถูกแปลงเป็น light/dark ใน JS แล้ว
+     data-accent="mint|peach"     สีไฮไลต์งานที่เสร็จ (ไม่มี = เหลือง)
+   ค่าคอนทราสต์ทุกคู่สีถูกตรวจในเทสต์ (src/styles/tokens.test.js) ถ้าแก้สีให้รันเทสต์ด้วย */
+
+:root {
+  color-scheme: light;
+
+  /* พื้นผิว */
+  --bg: #f7f8fc;
+  --card: #ffffff;
+  --border: #e6e9f2;
+  --input-border: #8189a7; /* คอนทราสต์ 3:1 กับพื้นหลังและการ์ด */
+
+  /* ตัวอักษร */
+  --ink: #2b3350;
+  --ink-soft: #3f4a70; /* ข้อความรองบนพื้นพาสเทล */
+  --muted: #5a6385; /* ข้อความรองบนพื้นสว่าง (ผ่าน AA) */
+  --on-ink: #ffffff; /* ตัวอักษรบนปุ่มสีหมึก */
+
+  /* พาสเทล */
+  --blue: #cfe0ff; /* วันที่เลือก, การ์ดทำอยู่ตอนนี้ */
+  --mint: #cdefe0; /* งานเสร็จ */
+  --peach: #ffd9c9; /* งานค้าง, ที่พักความคิด */
+  --progress: #6c8cd5; /* แถบความคืบหน้า และวงโฟกัสคีย์บอร์ด */
+
+  /* ไฮไลต์ขีดงานที่เสร็จ (ผู้ใช้เลือกสีได้) และสีตัวอักษรของงานที่เสร็จ */
+  --marker: #ffe98a;
+  --done-text: var(--muted);
+
+  /* รูปทรง */
+  --radius: 16px;
+  --radius-sm: 12px;
+  --radius-pill: 999px;
+
+  /* ระยะห่าง (ใช้ชุดนี้ชุดเดียว) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* ตัวอักษร */
+  --font: 'IBM Plex Sans Thai', 'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --text-title: 28px;
+  --text-heading: 18px;
+  --text-body: 16px;
+  --text-small: 14px;
+  --leading: 1.6; /* ภาษาไทยต้อง 1.6 ขึ้นไป */
+
+  /* พื้นที่กดขั้นต่ำ */
+  --tap: 44px;
+
+  /* ความสูงโดยประมาณของช่องจดเร็วล่างจอ (ใช้ยกตำแหน่ง snackbar ให้พ้น) */
+  --capture-h: 84px;
+  --column: 520px; /* ความกว้างสูงสุดของเนื้อหา บนจอใหญ่จะอยู่กลางจอ */
+
+  /* safe area (รอยบาก/แถบล่างของมือถือตอนเปิดแบบติดตั้ง) */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+/* สีไฮไลต์: โหมดสว่าง */
+:root[data-accent='mint'] {
+  --marker: #b8f0d0;
+}
+:root[data-accent='peach'] {
+  --marker: #ffd9e8;
+}
+
+/* โหมดมืด: พาสเทลโทนหม่น ไม่ใช้ดำสนิท */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #1b2036;
+  --card: #242b47;
+  --border: #343c5c;
+  --input-border: #7d86a8;
+  --ink: #e9ecf8;
+  --ink-soft: #c7cde6;
+  --muted: #a3abc8;
+  --on-ink: #1b2036;
+  --blue: #34497f;
+  --mint: #2c5a4b;
+  --peach: #6a4a44;
+  --progress: #8fb0ff;
+  --marker: #4f4726;
+  --done-text: var(--ink-soft); /* ตัวอักษร muted บนไฮไลต์เข้มไม่ผ่านคอนทราสต์ จึงใช้ ink-soft */
+}
+
+/* สีไฮไลต์: โหมดมืด (ต้องอยู่หลังบล็อกด้านบน เพราะความจำเพาะเท่ากัน ตัวหลังชนะ) */
+:root[data-theme='dark'][data-accent='mint'] {
+  --marker: #2a5a47;
+}
+:root[data-theme='dark'][data-accent='peach'] {
+  --marker: #5e3f50;
+}

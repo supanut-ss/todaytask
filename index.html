@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>ทำวันนี้ | วางแผนรายวัน ทำทีละงาน</title>
+    <meta
+      name="description"
+      content="ทำวันนี้ (todaytask) แอปวางแผนงานรายวัน เลือกวันได้ เห็นงานค้าง ทำทีละงาน จดสิ่งที่แทรกเข้ามาไว้ก่อน ใช้ฟรี ข้อมูลอยู่ในเครื่องคุณ"
+    />
+    <meta name="theme-color" content="#F7F8FC" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="ทำวันนี้" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- ใส่ธีมที่ผู้ใช้เลือกก่อนวาดหน้าจอ กันภาพกะพริบสว่างก่อนเป็นมืด (ตรรกะเดียวกับ src/lib/theme.js) -->
+    <script>
+      try {
+        var s = JSON.parse(localStorage.getItem('tw:v1:settings') || 'null') || {}
+        var dark =
+          s.theme === 'dark' ||
+          (s.theme !== 'light' &&
+            window.matchMedia &&
+            matchMedia('(prefers-color-scheme: dark)').matches)
+        var root = document.documentElement
+        if (dark) root.dataset.theme = 'dark'
+        if (s.accent === 'mint' || s.accent === 'peach') root.dataset.accent = s.accent
+        if (dark)
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1B2036')
+      } catch (e) {}
+    </script>
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

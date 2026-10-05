@@ -1,0 +1,52 @@
+.group {
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--radius);
+  background: var(--border);
+}
+
+.option {
+  flex: 1;
+  min-height: var(--tap);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.option[aria-pressed='true'] {
+  background: var(--card);
+  font-weight: 600;
+}
+
+.swatches {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.swatch {
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-pill);
+  color: #2b3350; /* ติ๊กบนสีไฮไลต์โหมดสว่างเสมอ */
+}
+
+.swatch[aria-pressed='true'] {
+  border-color: var(--ink);
+}
+
+.title {
+  margin-bottom: var(--space-2);
+}
+
+.block + .block {
+  margin-top: var(--space-4);
+}

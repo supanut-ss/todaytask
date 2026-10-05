@@ -1,0 +1,28 @@
+.bar {
+  flex: none;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding-bottom: var(--safe-bottom);
+}
+
+.form {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-end;
+  width: 100%;
+  max-width: var(--column);
+  margin: 0 auto;
+  padding: var(--space-3) calc(var(--space-4) + var(--safe-right)) var(--space-4)
+    calc(var(--space-4) + var(--safe-left));
+}
+
+.input {
+  flex: 1;
+}
+
+.send {
+  flex: none;
+  width: 48px;
+  min-height: 48px;
+  border-radius: var(--radius);
+}

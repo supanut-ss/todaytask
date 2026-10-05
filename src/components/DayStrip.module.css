@@ -1,0 +1,55 @@
+.strip {
+  display: flex;
+  gap: 6px;
+}
+
+.day {
+  flex: 1;
+  min-width: 0;
+  min-height: 68px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+/* วันนี้ที่ยังไม่ได้เลือก: ขอบสีหมึกให้รู้ว่าอยู่ตรงไหน */
+.today {
+  border-color: var(--ink);
+}
+
+.selected {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+
+.selected.today {
+  border-color: var(--ink);
+}
+
+.weekday {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.date {
+  font-size: var(--text-heading);
+  font-weight: 600;
+}
+
+.count {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.selected .weekday,
+.selected .count {
+  color: var(--ink);
+}

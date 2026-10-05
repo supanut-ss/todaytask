@@ -1,0 +1,52 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--text-small);
+  font-weight: 500;
+}
+
+/* ซ่อนจากสายตาแต่ยังให้โปรแกรมอ่านหน้าจออ่านได้ */
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  border: 1.5px solid var(--input-border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: var(--text-body); /* 16px ขึ้นไป กัน iOS ซูมเข้าตอนแตะ */
+}
+
+.input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+/* วงโฟกัสที่เห็นชัดเสมอ รวมช่องวันที่ (โฟกัสอยู่ในส่วนย่อยภายในของช่อง) */
+.input:focus,
+.input:focus-within {
+  outline: 3px solid var(--progress);
+  outline-offset: 2px;
+}
+
+/* ไอคอนปฏิทินของช่องวันที่เป็นปุ่มย่อยภายในช่อง: ให้มีวงโฟกัสของตัวเองเมื่อกด Tab มาถึง */
+.input::-webkit-calendar-picker-indicator:focus-visible {
+  outline: 3px solid var(--progress);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

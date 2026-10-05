@@ -1,0 +1,18 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.text {
+  flex: 1;
+  min-width: 12ch;
+  font-size: var(--text-small);
+  font-weight: 500;
+}
+
+.buttons {
+  display: flex;
+  gap: var(--space-2);
+}
